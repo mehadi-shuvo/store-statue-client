@@ -1,103 +1,83 @@
-import Image from "next/image";
+import GameTopUpCard from "@/components/GameTopUpCard";
+import GiftCard from "@/components/GiftCard";
+import GamingCard from "@/components/GiftCard";
+import ImageSlider from "@/components/ImageSlider";
+import ItemsTab from "@/components/ItemsTab";
+import ProductCard from "@/components/ProductCard";
+import SectionHeader from "@/components/SectionHeader";
 
 export default function Home() {
+  const sliderImages = [
+    {
+      src: "/slider1.jpg",
+      alt: "Beautiful landscape with mountains",
+    },
+    {
+      src: "/slider2.jpg",
+      alt: "City skyline at night",
+    },
+    {
+      src: "/slider3.jpg",
+      alt: "Beach with palm trees",
+    },
+  ];
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <div>
+      <div className="w-[90%] md:w-4/5 mx-auto pt-20 pb-10">
+        <ImageSlider images={sliderImages} autoPlayInterval={9000} />
+      </div>
+      <ItemsTab />
+      <SectionHeader
+        title="Latest Electronics"
+        subtitle="Cutting-edge technology and innovative gadgets for modern living"
+        category="electronics"
+      />
+      <div className="w-4/5 mx-auto grid lg:grid-cols-3 md:grid-cols-2 gap-3 mb-10">
+        <ProductCard />
+        <ProductCard />
+        <ProductCard />
+      </div>
+      <SectionHeader
+        title="Gift Card"
+        subtitle="Instant digital codes and in-game currency"
+        category="gaming"
+      />
+      <div className="w-4/5 mx-auto grid lg:grid-cols-3 md:grid-cols-2 gap-3 mb-10">
+        <GiftCard
+          brand="Amazon"
+          title="Amazon Gift Card"
+          image="https://images.pexels.com/photos/2783873/pexels-photo-2783873.jpeg"
+          // onAddToCart={(amount) =>
+          //   console.log(`Added $${amount} Amazon card to cart`)
+          // }
+          // onInstantBuy={(amount) =>
+          //   console.log(`Instant buy $${amount} Amazon card`)
+          // }
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <GiftCard
+          brand="Steam"
+          title="Steam Wallet Code"
+          image="https://images.pexels.com/photos/577514/pexels-photo-577514.jpeg"
+          currency="$"
+        />
+        <GiftCard
+          brand="PlayStation"
+          title="PSN Digital Card"
+          image="https://images.pexels.com/photos/7005690/pexels-photo-7005690.jpeg"
+        />
+      </div>
+
+      <SectionHeader
+        title="Game Top-Up"
+        subtitle="Instant digital codes and in-game currency"
+        category="topup"
+      />
+      <div className="w-4/5 mx-auto grid lg:grid-cols-3 md:grid-cols-2 gap-3 mb-10">
+        <GameTopUpCard />
+        <GameTopUpCard />
+        <GameTopUpCard />
+      </div>
     </div>
   );
 }
