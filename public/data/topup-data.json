@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "name": "Genshin Impact",
+    "subHeading": "Genesis Crystals Top-Up",
+    "title": "💎 Genesis Crystals",
+    "description": "Purchase Genesis Crystals to exchange for Primogems and other in-game items",
+    "logo": "https://i.ibb.co.com/Ndt6C7Vv/icons8-genshin-impact-logo-100.png",
+    "banner": "https://i.ibb.co.com/5WPVP91T/genshin-impact.jpg",
+    "gameCurrencyName": "Crystals",
+    "topUpAmounts": [
+      { "realCurrency": 5, "gameCurrency": 100, "popular": false },
+      { "realCurrency": 10, "gameCurrency": 200, "popular": true },
+      { "realCurrency": 20, "gameCurrency": 400, "popular": false },
+      { "realCurrency": 50, "gameCurrency": 600, "popular": false },
+      { "realCurrency": 100, "gameCurrency": 10000, "popular": false },
+      { "realCurrency": 200, "gameCurrency": 100000, "popular": false }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Free Fire",
+    "subHeading": "Diamonds Top-Up",
+    "title": "💎 Free Fire Diamonds",
+    "description": "Purchase Diamonds to unlock characters, weapons, and exclusive cosmetics",
+    "logo": "https://i.ibb.co.com/s9V5MX76/icons8-free-fire-100.png",
+    "banner": "https://i.ibb.co.com/rGfcBLdn/free-fire.jpg",
+    "gameCurrencyName": "Diamonds",
+    "topUpAmounts": [
+      { "realCurrency": 1, "gameCurrency": 100, "popular": false },
+      { "realCurrency": 5, "gameCurrency": 500, "popular": true },
+      { "realCurrency": 10, "gameCurrency": 1000, "popular": false },
+      { "realCurrency": 20, "gameCurrency": 2000, "popular": false },
+      { "realCurrency": 50, "gameCurrency": 5000, "popular": false },
+      { "realCurrency": 100, "gameCurrency": 10500, "popular": false }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Call of Duty: Mobile",
+    "subHeading": "CP Points Top-Up",
+    "title": "🎯 COD Points",
+    "description": "Get COD Points to buy battle passes, crates, and legendary weapon skins",
+    "logo": "https://i.ibb.co.com/rfxCx4F0/icons8-call-of-duty-mobile-100.png",
+    "banner": "https://i.ibb.co.com/4nVDjV0h/call-of-duty-mobile-promo-banner.jpg",
+    "gameCurrencyName": "CP",
+    "topUpAmounts": [
+      { "realCurrency": 2, "gameCurrency": 80, "popular": false },
+      { "realCurrency": 5, "gameCurrency": 200, "popular": true },
+      { "realCurrency": 10, "gameCurrency": 400, "popular": false },
+      { "realCurrency": 20, "gameCurrency": 800, "popular": false },
+      { "realCurrency": 50, "gameCurrency": 2000, "popular": false },
+      { "realCurrency": 100, "gameCurrency": 4200, "popular": false }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "PUBG Mobile",
+    "subHeading": "UC Top-Up",
+    "title": "🎮 Unknown Cash",
+    "description": "Buy UC to get premium crates, outfits, and weapon upgrades",
+    "logo": "https://i.ibb.co.com/cSKLYcX8/pubglogo.png",
+    "banner": "https://i.ibb.co.com/zTRzBzMF/pubg-mobile-banner.jpg",
+    "gameCurrencyName": "UC",
+    "topUpAmounts": [
+      { "realCurrency": 1, "gameCurrency": 60, "popular": false },
+      { "realCurrency": 5, "gameCurrency": 325, "popular": true },
+      { "realCurrency": 10, "gameCurrency": 660, "popular": false },
+      { "realCurrency": 20, "gameCurrency": 1800, "popular": false },
+      { "realCurrency": 50, "gameCurrency": 3850, "popular": false },
+      { "realCurrency": 100, "gameCurrency": 8100, "popular": false }
+    ]
+  }
+]

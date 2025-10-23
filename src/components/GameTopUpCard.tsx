@@ -1,35 +1,37 @@
 "use client";
+import { TTopUpData } from "@/types/top-up/topUpCardType";
 import Image from "next/image";
 import { useState } from "react";
 
-const GameTopUpCard = () => {
+const GameTopUpCard = ({
+  topUpDataObject,
+}: {
+  topUpDataObject: TTopUpData;
+}) => {
   const [isHovered, setIsHovered] = useState(false);
   const [selectedAmount, setSelectedAmount] = useState(10);
-  const gameCurrencyName = "Diamonds";
-
-  const topUpAmounts = [
-    { realCurrency: 5, gameCurrency: 100, popular: false },
-    { realCurrency: 10, gameCurrency: 200, popular: true },
-    { realCurrency: 20, gameCurrency: 400, popular: false },
-    { realCurrency: 50, gameCurrency: 600, popular: false },
-    { realCurrency: 100, gameCurrency: 10000, popular: false },
-    { realCurrency: 200, gameCurrency: 100000, popular: false },
-  ];
-
   return (
     <div className="max-w-md bg-gradient-to-br from-slate-900 via-purple-900 to-slate-800 rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 hover:shadow-purple-500/25 border border-purple-500/20">
       {/* Game Header with Logo */}
       <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-6">
         <div className="md:flex space-y-2 items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                G
-              </span>
+            <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg">
+              <Image
+                src={topUpDataObject.logo}
+                alt={topUpDataObject.name + " logo"}
+                width={42}
+                height={42}
+                unoptimized
+              />
             </div>
             <div>
-              <h2 className="text-white font-bold text-xl">Genshin Impact</h2>
-              <p className="text-white/80 text-sm">Genesis Crystals Top-Up</p>
+              <h2 className="text-white font-bold text-xl">
+                {topUpDataObject.name}
+              </h2>
+              <p className="text-white/80 text-sm">
+                {topUpDataObject.subHeading}
+              </p>
             </div>
           </div>
           <div className="bg-black/30 rounded-full px-3 py-1 border border-white/20 text-center">
@@ -47,10 +49,11 @@ const GameTopUpCard = () => {
         onMouseLeave={() => setIsHovered(false)}
       >
         <Image
-          src="https://images.pexels.com/photos/7005690/pexels-photo-7005690.jpeg"
+          src={topUpDataObject.banner}
           alt="Genshin Impact Game Art"
           fill
           className="object-cover mix-blend-overlay opacity-40"
+          unoptimized
         />
 
         {/* Hover Overlay with Game Info */}
@@ -60,10 +63,9 @@ const GameTopUpCard = () => {
           }`}
         >
           <div className="text-white p-6 text-center w-full">
-            <h3 className="font-bold text-lg mb-2">💎 Genesis Crystals</h3>
+            <h3 className="font-bold text-lg mb-2">{topUpDataObject.title}</h3>
             <p className="text-sm text-gray-300">
-              Purchase Genesis Crystals to exchange for Primogems and other
-              in-game items
+              {topUpDataObject.description}
             </p>
           </div>
         </div>
@@ -83,7 +85,7 @@ const GameTopUpCard = () => {
           </h3>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {topUpAmounts.map((item) => (
+            {topUpDataObject.topUpAmounts.map((item) => (
               <button
                 key={item.realCurrency}
                 onClick={() => setSelectedAmount(item.realCurrency)}
@@ -103,7 +105,7 @@ const GameTopUpCard = () => {
                     ${item.realCurrency}
                   </div>
                   <div className="text-green-400 text-xs font-semibold">
-                    {item.gameCurrency} {gameCurrencyName}
+                    {item.gameCurrency} {topUpDataObject.gameCurrencyName}
                   </div>
                 </div>
               </button>

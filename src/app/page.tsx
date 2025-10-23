@@ -1,12 +1,11 @@
-import GameTopUpCard from "@/components/GameTopUpCard";
 import GiftCard from "@/components/GiftCard";
-import GamingCard from "@/components/GiftCard";
 import ImageSlider from "@/components/ImageSlider";
 import ItemsTab from "@/components/ItemsTab";
 import ProductCard from "@/components/ProductCard";
 import SectionHeader from "@/components/SectionHeader";
+import TopUpSection from "@/components/TopUpSection";
 
-export default function Home() {
+export default async function Home() {
   const sliderImages = [
     {
       src: "/slider1.jpg",
@@ -73,11 +72,7 @@ export default function Home() {
         subtitle="Instant digital codes and in-game currency"
         category="topup"
       />
-      <div className="w-4/5 mx-auto grid lg:grid-cols-3 md:grid-cols-2 gap-3 mb-10">
-        <GameTopUpCard />
-        <GameTopUpCard />
-        <GameTopUpCard />
-      </div>
+      <TopUpSection />
     </div>
   );
 }
