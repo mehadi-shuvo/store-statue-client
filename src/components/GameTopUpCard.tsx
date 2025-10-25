@@ -9,7 +9,12 @@ const GameTopUpCard = ({
   topUpDataObject: TTopUpData;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [selectedAmount, setSelectedAmount] = useState(10);
+  const bestAmount = topUpDataObject.topUpAmounts.find(
+    (item) => item.popular === true
+  );
+  const [selectedAmount, setSelectedAmount] = useState(
+    bestAmount?.realCurrency
+  );
   return (
     <div className="max-w-md bg-gradient-to-br from-slate-900 via-purple-900 to-slate-800 rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 hover:shadow-purple-500/25 border border-purple-500/20">
       {/* Game Header with Logo */}
