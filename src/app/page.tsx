@@ -1,4 +1,3 @@
-import GiftCard from "@/components/GiftCard";
 import GiftCardTwo from "@/components/GiftCardTwo";
 import ImageSlider from "@/components/ImageSlider";
 import ItemsTab from "@/components/ItemsTab";
