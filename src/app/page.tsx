@@ -1,4 +1,5 @@
 import GiftCard from "@/components/GiftCard";
+import GiftCardTwo from "@/components/GiftCardTwo";
 import ImageSlider from "@/components/ImageSlider";
 import ItemsTab from "@/components/ItemsTab";
 import ProductCard from "@/components/ProductCard";
@@ -41,29 +42,21 @@ export default async function Home() {
         subtitle="Instant digital codes and in-game currency"
         category="gaming"
       />
-      <div className="w-4/5 mx-auto grid lg:grid-cols-3 md:grid-cols-2 gap-3 mb-10">
-        <GiftCard
+      <div className="w-4/5 mx-auto grid lg:grid-cols-3 md:grid-cols-2 gap-5 mb-10">
+        <GiftCardTwo
           brand="Amazon"
-          title="Amazon Gift Card"
-          image="https://images.pexels.com/photos/2783873/pexels-photo-2783873.jpeg"
-          // onAddToCart={(amount) =>
-          //   console.log(`Added $${amount} Amazon card to cart`)
-          // }
-          // onInstantBuy={(amount) =>
-          //   console.log(`Instant buy $${amount} Amazon card`)
-          // }
+          title="this is amazon gift card"
+          image="https://i.ibb.co.com/9kJbv9nd/Nice-Png-amazon-logo-png-transparent-592581.png"
         />
-
-        <GiftCard
-          brand="Steam"
-          title="Steam Wallet Code"
-          image="https://images.pexels.com/photos/577514/pexels-photo-577514.jpeg"
-          currency="$"
+        <GiftCardTwo
+          brand="apple"
+          title="this is amazon gift card"
+          image="https://i.ibb.co.com/9kJbv9nd/Nice-Png-amazon-logo-png-transparent-592581.png"
         />
-        <GiftCard
-          brand="PlayStation"
-          title="PSN Digital Card"
-          image="https://images.pexels.com/photos/7005690/pexels-photo-7005690.jpeg"
+        <GiftCardTwo
+          brand="Google"
+          title="this is amazon gift card"
+          image="https://i.ibb.co.com/9kJbv9nd/Nice-Png-amazon-logo-png-transparent-592581.png"
         />
       </div>
 
