@@ -1,0 +1,102 @@
+[
+  {
+    "id": "1",
+    "name": "iPhone 15 Pro Max",
+    "description": "Latest A17 Pro chip, Titanium design, 48MP Main camera, and Dynamic Island. Experience the ultimate iPhone.",
+    "price": 1199,
+    "originalPrice": 1299,
+    "image": "https://i.ibb.co.com/rfxCx4F0/icons8-call-of-duty-mobile-100.png",
+    "category": "Smartphone",
+    "brand": "Apple",
+    "rating": 4.8,
+    "reviewCount": 1247,
+    "tags": ["New", "5G", "Face ID"],
+    "features": ["6.7\" Super Retina XDR", "A17 Pro Chip", "48MP Camera", "5G"],
+    "stock": 15
+  },
+  {
+    "id": "2",
+    "name": "Samsung Galaxy S24 Ultra",
+    "description": "Revolutionary AI features, Snapdragon 8 Gen 3, S Pen included, and stunning 200MP camera system.",
+    "price": 1299,
+    "originalPrice": 1399,
+    "image": "https://i.ibb.co.com/rfxCx4F0/icons8-call-of-duty-mobile-100.png",
+    "category": "Smartphone",
+    "brand": "Samsung",
+    "rating": 4.7,
+    "reviewCount": 892,
+    "tags": ["AI", "S Pen", "5G"],
+    "features": [
+      "6.8\" Dynamic AMOLED",
+      "200MP Camera",
+      "S Pen",
+      "AI Features"
+    ],
+    "stock": 8
+  },
+  {
+    "id": "3",
+    "name": "MacBook Pro 16\" M3 Max",
+    "description": "Blazing fast M3 Max chip, Liquid Retina XDR display, and all-day battery life for professionals.",
+    "price": 3499,
+    "originalPrice": 3699,
+    "image": "https://i.ibb.co.com/rfxCx4F0/icons8-call-of-duty-mobile-100.png",
+    "category": "Laptop",
+    "brand": "Apple",
+    "rating": 4.9,
+    "reviewCount": 567,
+    "tags": ["M3 Chip", "Pro", "XDR"],
+    "features": ["16.2\" Liquid Retina", "M3 Max Chip", "32GB RAM", "1TB SSD"],
+    "stock": 12
+  },
+  {
+    "id": "4",
+    "name": "Sony WH-1000XM5",
+    "description": "Industry-leading noise cancellation, 30-hour battery life, and exceptional sound quality.",
+    "price": 399,
+    "originalPrice": 449,
+    "image": "https://i.ibb.co.com/rfxCx4F0/icons8-call-of-duty-mobile-100.png",
+    "category": "Headphones",
+    "brand": "Sony",
+    "rating": 4.6,
+    "reviewCount": 2341,
+    "tags": ["Noise Cancelling", "Wireless", "Hi-Res"],
+    "features": [
+      "30hr Battery",
+      "Noise Cancelling",
+      "Touch Control",
+      "Hi-Res Audio"
+    ],
+    "stock": 25
+  },
+  {
+    "id": "5",
+    "name": "iPad Pro 12.9\" M2",
+    "description": "Powerful M2 chip, Liquid Retina XDR display, and pro cameras. Perfect for creativity and productivity.",
+    "price": 1099,
+    "originalPrice": 1199,
+    "image": "https://i.ibb.co.com/rfxCx4F0/icons8-call-of-duty-mobile-100.png",
+    "category": "Tablet",
+    "brand": "Apple",
+    "rating": 4.7,
+    "reviewCount": 1563,
+    "tags": ["M2 Chip", "Pro", "XDR"],
+    "features": ["12.9\" XDR Display", "M2 Chip", "Face ID", "5G Compatible"],
+    "stock": 0
+  },
+  {
+    "id": "6",
+    "name": "Dell XPS 15 OLED",
+    "description": "Stunning 3.5K OLED display, Intel Core i9, and RTX graphics. The ultimate creative workstation.",
+    "price": 2499,
+    "originalPrice": 2799,
+    "image": "https://i.ibb.co.com/rfxCx4F0/icons8-call-of-duty-mobile-100.png",
+    "category": "Laptop",
+    "brand": "Dell",
+    "rating": 4.5,
+    "reviewCount": 723,
+    "tags": ["OLED", "Creator", "Performance"],
+    "features": ["15.6\" 3.5K OLED", "Intel i9", "RTX 4060", "32GB RAM"],
+    "stock": 5
+  }
+]

@@ -2,6 +2,7 @@ import GiftCardTwo from "@/components/GiftCardTwo";
 import ImageSlider from "@/components/ImageSlider";
 import ItemsTab from "@/components/ItemsTab";
 import ProductCard from "@/components/ProductCard";
+import { ProductsGrid } from "@/components/ProductsGrid";
 import SectionHeader from "@/components/SectionHeader";
 import TopUpSection from "@/components/TopUpSection";
 
@@ -31,11 +32,9 @@ export default async function Home() {
         subtitle="Cutting-edge technology and innovative gadgets for modern living"
         category="electronics"
       />
-      <div className="w-4/5 mx-auto grid lg:grid-cols-3 md:grid-cols-2 gap-3 mb-10">
-        <ProductCard />
-        <ProductCard />
-        <ProductCard />
-      </div>
+
+      <ProductsGrid />
+
       <SectionHeader
         title="Gift Card"
         subtitle="Instant digital codes and in-game currency"
