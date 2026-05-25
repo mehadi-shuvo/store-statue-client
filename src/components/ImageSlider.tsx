@@ -65,7 +65,7 @@ export default function ImageSlider({
   }, [nextSlide, autoPlayInterval]);
 
   return (
-    <div className="relative w-full max-w-[1080px] mx-auto overflow-hidden rounded-lg shadow-xl">
+    <div className="relative w-full mx-auto overflow-hidden rounded-lg shadow-xl">
       {/* Slider Container */}
       <div
         className="relative h-64 md:h-96 lg:h-[500px] w-full"

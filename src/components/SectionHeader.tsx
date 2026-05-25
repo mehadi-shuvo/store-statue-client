@@ -1,84 +1,52 @@
 "use client";
-import React from "react";
+
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 interface SectionHeaderProps {
   title: string;
   subtitle?: string;
-  category?: "gaming" | "electronics" | "topup" | "all";
-  align?: "left" | "center" | "right";
+  href?: string;
+  badge?: string;
 }
 
-const SectionHeader: React.FC<SectionHeaderProps> = ({
+export default function SectionHeader({
   title,
   subtitle,
-  category = "all",
-  align = "center",
-}) => {
-  // Simple category-based colors
-  const categoryColors = {
-    gaming: {
-      accent: "text-purple-600",
-      border: "border-purple-200",
-      bg: "bg-purple-50",
-    },
-    electronics: {
-      accent: "text-blue-600",
-      border: "border-blue-200",
-      bg: "bg-blue-50",
-    },
-    topup: {
-      accent: "text-green-600",
-      border: "border-green-200",
-      bg: "bg-green-50",
-    },
-    all: {
-      accent: "text-gray-600",
-      border: "border-gray-200",
-      bg: "bg-gray-50",
-    },
-  };
-
-  const alignmentStyles = {
-    left: "text-left items-start",
-    center: "text-center items-center",
-    right: "text-right items-end",
-  };
-
-  const colors = categoryColors[category];
-
+  href,
+  badge,
+}: SectionHeaderProps) {
   return (
-    <div className={`py-12 ${colors.bg} rounded-2xl mb-8`}>
-      <div
-        className={`max-w-4xl mx-auto px-6 flex flex-col ${alignmentStyles[align]}`}
-      >
-        {/* Simple Category Badge */}
-        <div
-          className={`inline-flex px-4 py-2 rounded-full ${colors.bg} border ${colors.border} mb-4`}
-        >
-          <span
-            className={`text-sm font-semibold ${colors.accent} uppercase tracking-wide`}
-          >
-            {category === "all" ? "Featured" : category}
-          </span>
+    <div className="w-4/5 mx-auto px-4 sm:px-6 lg:px-8 mb-8 flex items-end justify-between gap-4">
+      {/* Left Content */}
+      <div>
+        <div className="flex items-center gap-3 mb-1">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            {title}
+          </h2>
+
+          {badge && (
+            <span className="text-xs font-medium bg-blue-100 text-blue-600 px-2 py-1 rounded-full">
+              {badge}
+            </span>
+          )}
         </div>
 
-        {/* Clean Title */}
-        <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${colors.accent}`}>
-          {title}
-        </h1>
-
-        {/* Simple Subtitle */}
         {subtitle && (
-          <p className="text-lg text-gray-600 max-w-2xl leading-relaxed">
-            {subtitle}
-          </p>
+          <p className="text-sm text-gray-500 max-w-xl">{subtitle}</p>
         )}
-
-        {/* Minimal Decorative Line */}
-        <div className={`w-16 h-1 ${colors.bg} rounded-full mt-6`}></div>
       </div>
+
+      {/* Right CTA */}
+      {href && (
+        <Link
+          href={href}
+          className="hidden sm:flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 transition"
+        >
+          View All
+          <ArrowRight className="w-4 h-4" />
+        </Link>
+      )}
     </div>
   );
-};
-
-export default SectionHeader;
+}

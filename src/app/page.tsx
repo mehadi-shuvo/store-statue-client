@@ -1,3 +1,5 @@
+import FeaturedCategories from "@/components/FeaturedCategories";
+import GiftCArdSm from "@/components/giftCard/GiftCardSm";
 import GiftCardTwo from "@/components/GiftCardTwo";
 import ImageSlider from "@/components/ImageSlider";
 import ItemsTab from "@/components/ItemsTab";
@@ -5,6 +7,9 @@ import ProductCard from "@/components/ProductCard";
 import { ProductsGrid } from "@/components/ProductsGrid";
 import SectionHeader from "@/components/SectionHeader";
 import TopUpSection from "@/components/TopUpSection";
+import TrustBar from "@/components/trustBar/TrustBar";
+import WhyChooseUs from "@/components/WhyChooseUs";
+import { giftCards } from "@/utils/giftCardData";
 
 export default async function Home() {
   const sliderImages = [
@@ -23,47 +28,48 @@ export default async function Home() {
   ];
   return (
     <div>
-      <div className="w-[90%] md:w-4/5 mx-auto pt-20 pb-10">
+      <div className="w-4/5 mx-auto pt-[148px] pb-10">
         <ImageSlider images={sliderImages} autoPlayInterval={9000} />
       </div>
-      <ItemsTab />
+
+      <TrustBar />
+
+      <FeaturedCategories />
+
+      {/* ==== Latest Accessories Section ==== */}
       <SectionHeader
-        title="Latest Electronics"
-        subtitle="Cutting-edge technology and innovative gadgets for modern living"
-        category="electronics"
+        title="Latest Accessories"
+        subtitle="Cutting-edge gadgets for modern life"
+        href="/products?category=accessories"
+        badge="New"
       />
 
       <ProductsGrid />
 
+      {/* Gift Card Grid Section */}
       <SectionHeader
-        title="Gift Card"
-        subtitle="Instant digital codes and in-game currency"
-        category="gaming"
+        title="Popular Gift Cards"
+        subtitle="Top brands at the best prices"
+        href="/gift-cards"
       />
-      <div className="w-4/5 mx-auto grid lg:grid-cols-3 md:grid-cols-2 gap-5 mb-10">
-        <GiftCardTwo
-          brand="Amazon"
-          title="this is amazon gift card"
-          image="https://i.ibb.co.com/9kJbv9nd/Nice-Png-amazon-logo-png-transparent-592581.png"
-        />
-        <GiftCardTwo
-          brand="apple"
-          title="this is amazon gift card"
-          image="https://i.ibb.co.com/9kJbv9nd/Nice-Png-amazon-logo-png-transparent-592581.png"
-        />
-        <GiftCardTwo
-          brand="Google"
-          title="this is amazon gift card"
-          image="https://i.ibb.co.com/9kJbv9nd/Nice-Png-amazon-logo-png-transparent-592581.png"
-        />
-      </div>
 
-      <SectionHeader
-        title="Game Top-Up"
-        subtitle="Instant digital codes and in-game currency"
-        category="topup"
-      />
-      <TopUpSection />
+      <section className="w-4/5 mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {giftCards.map((card) => (
+            <GiftCArdSm
+              key={card.id}
+              id={card.id}
+              brand={card.brand}
+              title={card.title}
+              image={card.image}
+              startingPrice={card.amounts[0]?.cardUSD || 0}
+              currency={card.currency}
+            />
+          ))}
+        </div>
+      </section>
+
+      <WhyChooseUs />
     </div>
   );
 }

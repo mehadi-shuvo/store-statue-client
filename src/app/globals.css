@@ -14,6 +14,10 @@
   }
 }
 
+.dropdown-item {
+  @apply block px-4 py-2 text-sm text-white hover:bg-slate-800 transition;
+}
+
 .animate-fade-in {
   animation: fade-in 0.3s ease-out;
 }

@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "categoryID": "6c162c3e-1b8d-4648-a1b5-3585b2654914",
+    "name": "Smart Watch",
+    "icon": "https://i.ibb.co.com/1J0P8Wxr/001-smart-watch.png",
+    "href": "categories/smart-watch",
+    "description": "A sleek wearable device to track your fitness and stay connected on the go."
+  },
+  {
+    "id": 2,
+    "categoryID": "6c162c3e-1b8d-4648-a1b5-3585b2654914",
+    "name": "Lamp",
+    "icon": "https://i.ibb.co.com/6cQN3N3f/002-lamp.png",
+    "href": "categories/lamps",
+    "description": "A modern desk lamp providing adjustable lighting for work or study."
+  },
+  {
+    "id": 3,
+    "categoryID": "6c162c3e-1b8d-4648-a1b5-3585b2654914",
+    "name": "Headphones",
+    "icon": "https://i.ibb.co.com/Fb0NLNjy/003-headphones.png",
+    "href": "categories/headphones",
+    "description": "High-fidelity over-ear headphones for an immersive audio experience."
+  },
+  {
+    "id": 4,
+    "categoryID": "6c162c3e-1b8d-4648-a1b5-3585b2654914",
+    "name": "TWS Earbuds",
+    "icon": "https://i.ibb.co.com/5hXcSgr4/004-tws.png",
+    "href": "categories/tws-earbuds",
+    "description": "True Wireless Stereo earbuds with a compact charging case and crystal-clear sound."
+  },
+  {
+    "id": 5,
+    "categoryID": "6c162c3e-1b8d-4648-a1b5-3585b2654914",
+    "name": "Powerbank",
+    "icon": "https://i.ibb.co.com/bM7Cbvcc/005-powerbank.png",
+    "href": "categories/powerbank",
+    "description": "Portable high-capacity battery pack to keep your devices charged all day."
+  },
+  {
+    "id": 6,
+    "categoryID": "6c162c3e-1b8d-4648-a1b5-3585b2654914",
+    "name": "Phone Cover",
+    "icon": "https://i.ibb.co.com/4g0Ch83S/006-mobile.png",
+    "href": "categories/phone-covers",
+    "description": "A powerful smartphone with a stunning display and advanced camera system."
+  },
+  {
+    "id": 7,
+    "categoryID": "6c162c3e-1b8d-4648-a1b5-3585b2654914",
+    "name": "Game Controller",
+    "icon": "https://i.ibb.co.com/7d4XjQWC/007-game-controller.png",
+    "href": "categories/game-controller",
+    "description": "Ergonomic wireless controller designed for precision gaming and comfort."
+  },
+  {
+    "id": 8,
+    "categoryID": "6c162c3e-1b8d-4648-a1b5-3585b2654914",
+    "name": "Light",
+    "icon": "https://i.ibb.co.com/ynDQvTYW/008-light.png",
+    "href": "categories/led-light",
+    "description": "Energy-efficient LED bulb to brighten up any room in your home."
+  },
+  {
+    "id": 9,
+    "categoryID": "6c162c3e-1b8d-4648-a1b5-3585b2654914",
+    "name": "Hanging Lamp",
+    "icon": "https://i.ibb.co.com/79DtFC1/009-hanging-lamp.png",
+    "href": "categories/Hanging-lamp",
+    "description": "A stylish ceiling-mounted lamp that adds a touch of elegance to your decor."
+  },
+  {
+    "id": 10,
+    "categoryID": "6c162c3e-1b8d-4648-a1b5-3585b2654914",
+    "name": "Digital Clock",
+    "icon": "https://i.ibb.co.com/5gFPWTBb/010-digital-clock.png",
+    "href": "categories/digital-clock",
+    "description": "A sleek digital bedside clock with a clear display and alarm functions."
+  },
+  {
+    "id": 11,
+    "categoryID": "6c162c3e-1b8d-4648-a1b5-3585b2654914",
+    "name": "Smart Lighting",
+    "icon": "https://i.ibb.co.com/nqg1Q7LS/011-smart-lighting.png",
+    "href": "categories/smart-lighting",
+    "description": "App-controlled lighting system to set the perfect mood for any occasion."
+  },
+  {
+    "id": 12,
+    "categoryID": "6c162c3e-1b8d-4648-a1b5-3585b2654914",
+    "name": "Smart Door",
+    "icon": "https://i.ibb.co.com/hF4y840m/012-smart-door.png",
+    "href": "categories/smart-door",
+    "description": "An automated smart entry system providing enhanced security and convenience."
+  }
+]
