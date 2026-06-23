@@ -395,7 +395,7 @@ const NavbarNew = () => {
                     href="/deals"
                     className="block py-2 text-slate-300 hover:text-white transition"
                   >
-                    🔥 Today's Deals
+                    🔥 Today&apos;s Deals
                   </Link>
                   <Link
                     href="/new-arrivals"

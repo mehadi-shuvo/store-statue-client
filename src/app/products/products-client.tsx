@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { apiUrl } from "@/lib/api";
 
@@ -9,8 +10,9 @@ interface Product {
   price: number;
 }
 
-export default function CategoryPage() {
-  const categoryID = "6c162c3e-1b8d-4648-a1b5-3585b2654914";
+export default function ProductsClientPage() {
+  const searchParams = useSearchParams();
+  const search = searchParams.get("search") || "";
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
@@ -22,12 +24,9 @@ export default function CategoryPage() {
       setError(null);
 
       try {
-        // Build URL based on whether categoryID exists
-        const url = categoryID
-          ? apiUrl(`/api/products?categories=${encodeURIComponent(categoryID)}`)
+        const url = search
+          ? apiUrl(`/api/products?search=${encodeURIComponent(search)}`)
           : apiUrl("/api/products");
-
-        console.log("Fetching from:", url); // Debug log
 
         const res = await fetch(url);
 
@@ -36,10 +35,8 @@ export default function CategoryPage() {
         }
 
         const json = await res.json();
-        console.log("API Response:", json); // Debug log to see actual structure
 
-        // Handle different possible API response structures
-        let productsData = [];
+        let productsData: Product[] = [];
 
         if (json?.data?.data?.data) {
           productsData = json.data.data.data;
@@ -51,23 +48,15 @@ export default function CategoryPage() {
           productsData = json;
         } else if (json?.products) {
           productsData = json.products;
-        } else {
-          productsData = [];
         }
 
-        // Ensure productsData is an array
         if (!Array.isArray(productsData)) {
-          console.error("Products data is not an array:", productsData);
           productsData = [];
         }
 
         setProducts(productsData);
-        console.log("Products set:", productsData.length); // Debug log
       } catch (err) {
-        console.error("Error fetching products:", err);
-        setError(
-          err instanceof Error ? err.message : "Failed to load products",
-        );
+        setError(err instanceof Error ? err.message : "Failed to load products");
         setProducts([]);
       } finally {
         setLoading(false);
@@ -75,15 +64,14 @@ export default function CategoryPage() {
     };
 
     fetchProducts();
-  }, [categoryID]);
-
-  // Debug: Log products when they change
-  useEffect(() => {
-    console.log("Current products state:", products);
-  }, [products]);
+  }, [search]);
 
   return (
-    <div className="w-4/5 max-w-7xl mx-auto py-10">
+    <div className="w-[90%] max-w-7xl mx-auto py-10">
+      <h1 className="text-2xl font-bold text-white mb-6">
+        {search ? `Search Results for "${search}"` : "All Products"}
+      </h1>
+
       {loading ? (
         <div className="flex justify-center items-center py-20">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-3 border-purple-500 border-t-transparent"></div>
@@ -103,11 +91,11 @@ export default function CategoryPage() {
         <div className="text-center py-20">
           <div className="text-6xl mb-4">🔍</div>
           <p className="text-slate-400 text-lg">
-            {categoryID
+            {search
               ? "No products found. Try a different search term."
               : "No products available."}
           </p>
-          {categoryID && (
+          {search && (
             <button
               onClick={() => (window.location.href = "/products")}
               className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"

@@ -11,8 +11,6 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import { API_BASE_URL } from "./api";
-
 export interface CategoryRecord {
   id?: string | number;
   categoryID?: string;

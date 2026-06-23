@@ -9,7 +9,7 @@ export default function GiftCardNotFound() {
           Gift Card Not Found
         </h2>
         <p className="text-gray-600 mb-6">
-          The gift card you're looking for doesn't exist or has been removed.
+          The gift card you&apos;re looking for doesn&apos;t exist or has been removed.
         </p>
         <Link
           href="/"
