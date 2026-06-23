@@ -18,7 +18,7 @@ import {
   normalizeCategory,
   parseCategoriesPayload,
 } from "@/lib/categories";
-import { API_BASE_URL } from "@/lib/api";
+import { apiUrl } from "@/lib/api";
 
 const PAGE_SIZE = 12;
 
@@ -95,7 +95,7 @@ export default function AccessoriesPage() {
         setCategoriesLoading(true);
         setCategoriesError("");
 
-        const response = await fetch(`${API_BASE_URL}/api/categories`, {
+        const response = await fetch(apiUrl("/api/categories"), {
           signal: controller.signal,
         });
 
@@ -164,12 +164,9 @@ export default function AccessoriesPage() {
           query.set("search", activeSearch.trim());
         }
 
-        const response = await fetch(
-          `${API_BASE_URL}/api/products?${query.toString()}`,
-          {
-            signal,
-          },
-        );
+        const response = await fetch(apiUrl(`/api/products?${query.toString()}`), {
+          signal,
+        });
 
         let payload: unknown = null;
 

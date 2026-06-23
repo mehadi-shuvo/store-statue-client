@@ -11,7 +11,7 @@ import {
   normalizeCategory,
   parseCategoriesPayload,
 } from "@/lib/categories";
-import { API_BASE_URL } from "@/lib/api";
+import { apiUrl } from "@/lib/api";
 
 type CategoriesApiResponse = unknown;
 
@@ -30,7 +30,7 @@ export default function FeaturedCategories() {
         setLoading(true);
         setError("");
 
-        const response = await fetch(`${API_BASE_URL}/api/categories`, {
+        const response = await fetch(apiUrl("/api/categories"), {
           signal: controller.signal,
         });
 

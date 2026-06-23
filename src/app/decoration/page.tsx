@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowRight, RefreshCcw, Search, Sparkles } from "lucide-react";
 import ProductCardSm from "@/components/ProductCardSm";
 import { TProduct } from "@/types/top-up/productsType";
-import { API_BASE_URL } from "@/lib/api";
+import { apiUrl } from "@/lib/api";
 
 const PAGE_SIZE = 12;
 
@@ -85,10 +85,9 @@ export default function DecorationPage() {
           query.set("search", activeSearch.trim());
         }
 
-        const response = await fetch(
-          `${API_BASE_URL}/api/products?${query.toString()}`,
-          { signal },
-        );
+        const response = await fetch(apiUrl(`/api/products?${query.toString()}`), {
+          signal,
+        });
 
         let payload: unknown = null;
 
