@@ -5,7 +5,7 @@ import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import NavItems from "./navbar/NavItems";
 import GlobalSearch from "./navbar/GlobalSearch";
 
@@ -71,7 +71,13 @@ const NavbarNew = () => {
 
           {/* Desktop Search - Centered */}
           <div className="hidden md:block flex-1 max-w-2xl mx-4 lg:mx-8">
-            <GlobalSearch />
+            <Suspense
+              fallback={
+                <div className="h-11 rounded-xl border border-slate-800 bg-slate-900/70 animate-pulse" />
+              }
+            >
+              <GlobalSearch />
+            </Suspense>
           </div>
 
           {/* Right Side Actions - Essential E-commerce Features */}
@@ -344,7 +350,13 @@ const NavbarNew = () => {
         {/* Mobile Search Bar */}
         {searchMobileOpen && (
           <div className="md:hidden pb-3 animate-in slide-in-from-top-1 duration-200">
-            <GlobalSearch />
+            <Suspense
+              fallback={
+                <div className="h-11 rounded-xl border border-slate-800 bg-slate-900/70 animate-pulse" />
+              }
+            >
+              <GlobalSearch />
+            </Suspense>
           </div>
         )}
       </div>
