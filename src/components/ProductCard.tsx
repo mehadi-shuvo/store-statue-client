@@ -1,6 +1,7 @@
 "use client";
 
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -32,6 +33,8 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const [hovered, setHovered] = useState(false);
   const { addToCart } = useCart();
+  const { isWishlisted, toggleWishlist } = useWishlist();
+  const wished = isWishlisted(product.id);
 
   const onAddToCart = async (id: string) => {
     await addToCart(id, 1);
@@ -64,9 +67,49 @@ export default function ProductCard({ product }: ProductCardProps) {
           </span>
         ) : null}
 
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleWishlist({
+              id: product.id,
+              title: product.title,
+              price: product.price,
+              offerPercent: product.offerPercent ?? null,
+              photos: product.photos,
+              stockQuantity: product.stockQuantity,
+              description: product.description ?? null,
+              category: {
+                title: product.category.title,
+              },
+              features: product.features,
+              reviews: product.reviews,
+            });
+          }}
+          aria-pressed={wished}
+          className="absolute top-3 right-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white/90 text-gray-500 shadow-md backdrop-blur-sm transition hover:scale-105 hover:bg-white"
+          aria-label="Toggle wishlist"
+        >
+          <svg
+            className={`h-5 w-5 transition ${
+              wished ? "fill-red-500 text-red-500" : "text-gray-500"
+            }`}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+            />
+          </svg>
+        </button>
+
         {/* Stock Badge */}
         {product.stockQuantity === 0 && (
-          <span className="absolute top-3 right-3 bg-gray-700 text-white px-3 py-1 text-xs rounded-full">
+          <span className="absolute top-3 left-1/2 -translate-x-1/2 bg-gray-700 text-white px-3 py-1 text-xs rounded-full">
             Out of Stock
           </span>
         )}

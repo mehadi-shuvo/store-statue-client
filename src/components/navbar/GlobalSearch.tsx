@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
+import { apiUrl } from "@/lib/api";
 
 export default function GlobalSearch() {
   const router = useRouter();
@@ -32,7 +33,7 @@ export default function GlobalSearch() {
       setIsLoading(true);
       try {
         const res = await fetch(
-          `http://localhost:5000/api/products?search=${encodeURIComponent(debouncedQuery)}`,
+          apiUrl(`/api/products?search=${encodeURIComponent(debouncedQuery)}`),
         );
         const data = await res.json();
 

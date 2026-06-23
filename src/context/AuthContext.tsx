@@ -2,29 +2,26 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
-
-interface User {
-  id: string;
-  name?: string;
-  email?: string;
-  avatar?: string;
-}
+import { AuthUser } from "@/lib/auth";
 
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
+  token: string | null;
   loading: boolean;
-  login: (userData: User, token: string) => void;
+  login: (userData: AuthUser, token: string) => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const userInfo = Cookies.get("userInfo");
+    const storedToken = Cookies.get("token") || null;
 
     if (userInfo) {
       try {
@@ -34,24 +31,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     }
 
+    setToken(storedToken);
     setLoading(false);
   }, []);
 
-  const login = (userData: User, token: string) => {
-    Cookies.set("token", token);
+  const login = (userData: AuthUser, token: string) => {
+    Cookies.set("token", token, { sameSite: "lax" });
     Cookies.set("userInfo", JSON.stringify(userData));
 
     setUser(userData);
+    setToken(token);
   };
 
   const logout = () => {
     Cookies.remove("token");
     Cookies.remove("userInfo");
     setUser(null);
+    setToken(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

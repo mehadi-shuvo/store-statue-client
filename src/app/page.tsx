@@ -40,7 +40,7 @@ export default async function Home() {
       <SectionHeader
         title="Latest Accessories"
         subtitle="Cutting-edge gadgets for modern life"
-        href="/products?category=accessories"
+        href="/accessories"
         badge="New"
       />
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { TProduct } from "@/types/top-up/productsType";
 import ProductCardSm from "./ProductCardSm";
+import { apiUrl } from "@/lib/api";
 
 export const ProductsGrid = () => {
   const [products, setProducts] = useState<TProduct[]>([]);
@@ -14,9 +15,7 @@ export const ProductsGrid = () => {
       try {
         setLoading(true);
 
-        const res = await fetch(
-          "http://localhost:5000/api/products?limit=9&page=1",
-        );
+        const res = await fetch(apiUrl("/api/products?limit=9&page=1"));
 
         const json = await res.json();
 

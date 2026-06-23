@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { apiUrl } from "@/lib/api";
 
 interface Product {
   id: string;
@@ -25,8 +26,8 @@ const ProductsPage = () => {
       try {
         // Build URL based on whether search exists
         const url = search
-          ? `http://localhost:5000/api/products?search=${encodeURIComponent(search)}`
-          : "http://localhost:5000/api/products";
+          ? apiUrl(`/api/products?search=${encodeURIComponent(search)}`)
+          : apiUrl("/api/products");
 
         console.log("Fetching from:", url); // Debug log
 

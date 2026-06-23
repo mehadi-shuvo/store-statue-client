@@ -2,11 +2,20 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
+import { apiUrl } from "@/lib/api";
 
 interface CartItem {
   id: string;
   quantity: number;
   productId: string;
+  product?: {
+    id: string;
+    title: string;
+    price: number;
+    offerPercent?: number;
+    stockQuantity: number;
+    photos: string[];
+  };
 }
 
 interface CartContextType {
@@ -30,7 +39,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   // Fetch Cart
   const fetchCart = async (userId: string) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/user-cart/${userId}`);
+      const res = await fetch(apiUrl(`/api/user-cart/${userId}`));
 
       if (!res.ok) {
         console.error("Cart fetch failed");
@@ -56,7 +65,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const addToCart = async (productId: string, quantity = 1) => {
     try {
       if (!user?.id) return;
-      await fetch(`http://localhost:5000/api/user-cart/add`, {
+      await fetch(apiUrl(`/api/user-cart/add`), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -78,7 +87,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     if (quantity < 1) return;
     if (!user) return;
 
-    await fetch(`http://localhost:5000/api/cart/update`, {
+    await fetch(apiUrl(`/api/cart/update`), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ itemId, quantity }),
@@ -89,7 +98,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const removeItem = async (itemId: string) => {
     if (!user) return;
-    await fetch(`http://localhost:5000/api/cart/remove/${itemId}`, {
+    await fetch(apiUrl(`/api/cart/remove/${itemId}`), {
       method: "DELETE",
     });
 
@@ -97,14 +106,18 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const subtotal = cartItems.reduce((sum, item) => {
-    // const price =
-    // item.product.offerPercent > 0
-    //   ? item.product.price -
-    //     (item.product.price * item.product.offerPercent) / 100
-    //   : item.product.price;
+    const product = item.product;
 
-    // return sum + price * item.quantity;
-    return 100;
+    if (!product) {
+      return sum;
+    }
+
+    const price =
+      product.offerPercent && product.offerPercent > 0
+        ? product.price - (product.price * product.offerPercent) / 100
+        : product.price;
+
+    return sum + price * item.quantity;
   }, 0);
 
   useEffect(() => {

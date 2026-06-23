@@ -1,8 +1,8 @@
 "use client";
 
-import { log } from "console";
 import { useParams, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { apiUrl } from "@/lib/api";
 
 interface Product {
   id: string;
@@ -27,8 +27,8 @@ const page = () => {
       try {
         // Build URL based on whether categoryID exists
         const url = categoryID
-          ? `http://localhost:5000/api/products?categories=${encodeURIComponent(categoryID)}`
-          : "http://localhost:5000/api/products";
+          ? apiUrl(`/api/products?categories=${encodeURIComponent(categoryID)}`)
+          : apiUrl("/api/products");
 
         console.log("Fetching from:", url); // Debug log
 

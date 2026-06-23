@@ -1,10 +1,10 @@
 "use client";
 
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingCart, Heart } from "lucide-react";
-import { useState } from "react";
+import { Heart, ShoppingCart } from "lucide-react";
 
 interface ProductCardProps {
   product: {
@@ -19,18 +19,14 @@ interface ProductCardProps {
 
 export default function ProductCardSm({ product }: ProductCardProps) {
   const { addToCart } = useCart();
-  const [isLiked, setIsLiked] = useState(false);
+  const { isWishlisted, toggleWishlist } = useWishlist();
 
   const price = Number(product.price) || 0;
   const discount = Number(product.offerPercent) || 0;
   const hasDiscount = discount > 0 && discount < 100;
   const finalPrice = hasDiscount ? price - (price * discount) / 100 : price;
   const isOutOfStock = product.stockQuantity === 0;
-
-  const toggleLike = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsLiked(!isLiked);
-  };
+  const wished = isWishlisted(product.id);
 
   return (
     <div className="group flex flex-col overflow-hidden rounded-3xl bg-white border border-gray-200 transition-all duration-300 hover:shadow-xl hover:border-gray-300">
@@ -53,14 +49,26 @@ export default function ProductCardSm({ product }: ProductCardProps) {
 
         {/* Like Button - Top Right */}
         <button
-          onClick={toggleLike}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleWishlist({
+              id: product.id,
+              title: product.title,
+              price: product.price,
+              offerPercent: product.offerPercent ?? null,
+              photos: product.photos,
+              stockQuantity: product.stockQuantity,
+            });
+          }}
+          aria-pressed={wished}
           className="absolute right-4 top-4 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm border border-gray-200 transition-all duration-300 hover:bg-white hover:scale-110 active:scale-95 shadow-md"
           aria-label="Like product"
         >
           <Heart
             size={20}
             className={`transition-all duration-300 ${
-              isLiked
+              wished
                 ? "fill-red-500 stroke-red-500"
                 : "stroke-gray-400 hover:stroke-red-400"
             }`}

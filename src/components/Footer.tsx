@@ -13,6 +13,7 @@ const Footer = () => {
       title: "Shop",
       links: [
         { name: "Accessories", href: "/accessories" },
+        { name: "Wishlist", href: "/wishlist" },
         { name: "Game Top-Up", href: "/top-up" },
         { name: "Gift Cards", href: "/gift-cards" },
         { name: "Subscriptions", href: "/subscriptions" },

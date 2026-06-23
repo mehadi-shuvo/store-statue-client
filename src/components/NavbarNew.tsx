@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -16,6 +17,7 @@ const NavbarNew = () => {
 
   const { user, logout } = useAuth();
   const { totalQuantity } = useCart();
+  const { wishlistCount } = useWishlist();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -115,9 +117,11 @@ const NavbarNew = () => {
                 />
               </svg>
 
-              <span className="absolute -top-1 -right-1 bg-pink-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full text-white shadow-lg min-w-[18px] text-center">
-                99+
-              </span>
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-pink-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full text-white shadow-lg min-w-[18px] text-center">
+                  {wishlistCount > 99 ? "99+" : wishlistCount}
+                </span>
+              )}
             </Link>
 
             {/* Cart Icon with Badge */}
@@ -279,7 +283,7 @@ const NavbarNew = () => {
                             Sign In
                           </Link>
                           <Link
-                            href="/register"
+                            href="/signup"
                             className="dropdown-item flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition"
                           >
                             <svg
@@ -412,7 +416,7 @@ const NavbarNew = () => {
                     Sign In
                   </Link>
                   <Link
-                    href="/register"
+                    href="/signup"
                     className="block w-full text-center border border-slate-700 text-slate-300 py-2.5 rounded-lg font-medium hover:bg-slate-800 transition"
                   >
                     Create Account

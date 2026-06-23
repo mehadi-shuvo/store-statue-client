@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 // Types
 interface NavItem {
@@ -25,6 +26,7 @@ const Navbar = () => {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const { user, logout } = useAuth();
   const { totalQuantity } = useCart();
+  const { wishlistCount } = useWishlist();
 
   const pathname = usePathname();
 
@@ -409,6 +411,11 @@ const Navbar = () => {
                             />
                           </svg>
                           Wishlist
+                          {wishlistCount > 0 && (
+                            <span className="ml-auto rounded-full bg-pink-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                              {wishlistCount > 99 ? "99+" : wishlistCount}
+                            </span>
+                          )}
                         </Link>
                         <div className="border-t border-slate-700 my-1"></div>
                         <button
@@ -641,7 +648,7 @@ const Navbar = () => {
                         href="/wishlist"
                         onClick={() => setIsMobileMenuOpen(false)}
                         className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
-                      >
+                        >
                         <svg
                           className="w-5 h-5"
                           fill="none"
@@ -656,6 +663,11 @@ const Navbar = () => {
                           />
                         </svg>
                         Wishlist
+                        {wishlistCount > 0 && (
+                          <span className="ml-auto rounded-full bg-pink-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                            {wishlistCount > 99 ? "99+" : wishlistCount}
+                          </span>
+                        )}
                       </Link>
                     </div>
                     <button className="w-full flex items-center gap-3 px-4 py-3 mt-2 text-red-400 hover:text-red-300 hover:bg-slate-800 rounded-lg transition-colors">
