@@ -2,9 +2,10 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
+import { useToast } from "@/context/ToastContext";
 import { useWishlist } from "@/context/WishlistContext";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
 import NavItems from "./navbar/NavItems";
 import GlobalSearch from "./navbar/GlobalSearch";
@@ -18,7 +19,18 @@ const NavbarNew = () => {
   const { user, logout } = useAuth();
   const { totalQuantity } = useCart();
   const { wishlistCount } = useWishlist();
+  const toast = useToast();
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    setProfileOpen(false);
+    setMobileOpen(false);
+    toast.success("Signed out");
+    router.replace("/login");
+    router.refresh();
+  };
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -245,10 +257,7 @@ const NavbarNew = () => {
                             Wishlist
                           </Link>
                           <button
-                            onClick={() => {
-                              logout();
-                              setProfileOpen(false);
-                            }}
+                            onClick={handleLogout}
                             className="dropdown-item flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-slate-800 hover:text-red-300 transition w-full text-left"
                           >
                             <svg

@@ -7,6 +7,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import NavbarNew from "@/components/NavbarNew";
+import { ToastProvider } from "@/context/ToastContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,13 +35,15 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <NavbarNew />
-              {children}
-              <Footer />
-            </WishlistProvider>
-          </CartProvider>
+          <ToastProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <NavbarNew />
+                {children}
+                <Footer />
+              </WishlistProvider>
+            </CartProvider>
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

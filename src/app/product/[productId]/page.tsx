@@ -4,9 +4,9 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { TProduct } from "@/types/top-up/productsType";
 import { useWishlist } from "@/context/WishlistContext";
-import { apiUrl } from "@/lib/api";
+import { apiUrl, fetchApiJson } from "@/lib/api";
+import { useCart } from "@/context/CartContext";
 
 // Types
 interface Review {
@@ -52,8 +52,12 @@ interface ProductResponse {
   relatedProducts: RelatedProduct[];
 }
 
+interface ProductDetailsPayload {
+  data?: ProductResponse;
+}
+
 const ProductDetailsPage = () => {
-  const { productId, sear } = useParams();
+  const { productId } = useParams();
   // console.log({ productId });
 
   const [productData, setProductData] = useState<ProductResponse | null>(null);
@@ -62,6 +66,7 @@ const ProductDetailsPage = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const { isWishlisted, toggleWishlist } = useWishlist();
+  const { addToCart } = useCart();
 
   const price = Number(productData?.product.price);
 
@@ -74,16 +79,21 @@ const ProductDetailsPage = () => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const res = await fetch(apiUrl(`/api/products/${productId}`));
-        const json = await res.json();
+        const json = await fetchApiJson<ProductDetailsPayload>(
+          apiUrl(`/api/products/${productId}`),
+          undefined,
+          "Failed to load product",
+        );
 
-        if (!res.ok) {
-          throw new Error(json.message || "Failed to load product");
+        if (!json.data) {
+          throw new Error("Product details are missing.");
         }
 
         setProductData(json.data);
-      } catch (err: any) {
-        setError(err.message || "Failed to load product details");
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to load product details",
+        );
       } finally {
         setLoading(false);
       }
@@ -355,6 +365,7 @@ const ProductDetailsPage = () => {
 
               <div className="mb-6 flex flex-col sm:flex-row gap-3">
                 <button
+                  onClick={() => addToCart(product.id, quantity)}
                   disabled={product.stockQuantity === 0}
                   className="w-full py-4 bg-amber-500 hover:bg-amber-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition flex items-center justify-center gap-2"
                 >

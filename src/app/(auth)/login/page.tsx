@@ -4,12 +4,13 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { extractAuthSession, getAuthErrorMessage } from "@/lib/auth";
-import { apiUrl } from "@/lib/api";
+import { loginCustomer } from "@/lib/auth";
+import { useToast } from "@/context/ToastContext";
 
 const LoginPage = () => {
   const router = useRouter();
   const { login: setAuthUser } = useAuth();
+  const toast = useToast();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -32,37 +33,16 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const res = await fetch(apiUrl("/api/user/login"), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const user = await loginCustomer(formData);
 
-      let data: unknown = null;
-      try {
-        data = await res.json();
-      } catch {
-        data = null;
-      }
-
-      if (!res.ok) {
-        throw new Error(getAuthErrorMessage(data, "Login failed"));
-      }
-
-      const session = extractAuthSession(data);
-
-      if (session.user && session.token) {
-        setAuthUser(session.user, session.token);
-      } else {
-        router.refresh();
-      }
-
+      setAuthUser(user);
+      toast.success("Welcome back", "You are now signed in.");
       router.replace("/");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      const message = err instanceof Error ? err.message : "Login failed";
+      setError(message);
+      toast.error("Login failed", message);
     } finally {
       setLoading(false);
     }

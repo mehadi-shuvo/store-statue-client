@@ -3,13 +3,15 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
-import { extractAuthSession, getAuthErrorMessage } from "@/lib/auth";
-import { apiUrl } from "@/lib/api";
+import { registerCustomer } from "@/lib/auth";
+import { useToast } from "@/context/ToastContext";
+
+const strongPasswordPattern =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
 const SignupPage = () => {
   const router = useRouter();
-  const { login: setAuthUser } = useAuth();
+  const toast = useToast();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -35,52 +37,36 @@ const SignupPage = () => {
 
     // Basic Validation
     if (formData.password !== formData.confirmPassword) {
-      return setError("Passwords do not match!");
+      const message = "Passwords do not match!";
+      setError(message);
+      toast.error("Signup failed", message);
+      return;
     }
 
-    if (formData.password.length < 6) {
-      return setError("Password must be at least 6 characters long!");
+    if (!strongPasswordPattern.test(formData.password)) {
+      const message =
+        "Password must be 8+ characters with uppercase, lowercase, number, and special character.";
+      setError(message);
+      toast.error("Signup failed", message);
+      return;
     }
 
     setLoading(true);
 
     try {
-      const res = await fetch(apiUrl("/api/user/register"), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          phone: formData.phone,
-          email: formData.email,
-          password: formData.password,
-        }),
+      await registerCustomer({
+        name: formData.name.trim(),
+        phone: formData.phone.trim() || undefined,
+        email: formData.email.trim(),
+        password: formData.password,
       });
 
-      let data: unknown = null;
-      try {
-        data = await res.json();
-      } catch {
-        data = null;
-      }
-
-      if (!res.ok) {
-        throw new Error(getAuthErrorMessage(data, "Signup failed"));
-      }
-
-      const session = extractAuthSession(data);
-
-      if (session.user && session.token) {
-        setAuthUser(session.user, session.token);
-        router.replace("/");
-        router.refresh();
-        return;
-      }
-
+      toast.success("Account created", "Please login with your new account.");
       router.replace("/login?registered=1");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Signup failed");
+      const message = err instanceof Error ? err.message : "Signup failed";
+      setError(message);
+      toast.error("Signup failed", message);
     } finally {
       setLoading(false);
     }
@@ -131,7 +117,6 @@ const SignupPage = () => {
                   <input
                     type="text"
                     name="phone"
-                    required
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="01XXXXXXXXX"

@@ -1,57 +1,87 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-import Cookies from "js-cookie";
-import { AuthUser } from "@/lib/auth";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { AuthUser, getCustomerProfile, logoutCustomer } from "@/lib/auth";
 
 interface AuthContextType {
   user: AuthUser | null;
-  token: string | null;
   loading: boolean;
-  login: (userData: AuthUser, token: string) => void;
-  logout: () => void;
+  login: (userData: AuthUser) => void;
+  logout: () => Promise<void>;
+  clearAuth: () => void;
+  refreshProfile: () => Promise<AuthUser | null>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const userInfo = Cookies.get("userInfo");
-    const storedToken = Cookies.get("token") || null;
+    let active = true;
 
-    if (userInfo) {
-      try {
-        setUser(JSON.parse(userInfo));
-      } catch {
-        setUser(null);
-      }
-    }
+    getCustomerProfile()
+      .then((profile) => {
+        if (active) {
+          setUser(profile);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setUser(null);
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setLoading(false);
+        }
+      });
 
-    setToken(storedToken);
-    setLoading(false);
+    return () => {
+      active = false;
+    };
   }, []);
 
-  const login = (userData: AuthUser, token: string) => {
-    Cookies.set("token", token, { sameSite: "lax" });
-    Cookies.set("userInfo", JSON.stringify(userData));
-
+  const login = useCallback((userData: AuthUser) => {
     setUser(userData);
-    setToken(token);
-  };
+  }, []);
 
-  const logout = () => {
-    Cookies.remove("token");
-    Cookies.remove("userInfo");
+  const clearAuth = useCallback(() => {
     setUser(null);
-    setToken(null);
-  };
+  }, []);
+
+  const refreshProfile = useCallback(async () => {
+    try {
+      const profile = await getCustomerProfile();
+      setUser(profile);
+      return profile;
+    } catch {
+      setUser(null);
+      return null;
+    }
+  }, []);
+
+  const logout = useCallback(async () => {
+    try {
+      await logoutCustomer();
+    } catch {
+      // Treat logout errors as already signed out from the client's point of view.
+    } finally {
+      clearAuth();
+    }
+  }, [clearAuth]);
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, loading, login, logout, clearAuth, refreshProfile }}
+    >
       {children}
     </AuthContext.Provider>
   );

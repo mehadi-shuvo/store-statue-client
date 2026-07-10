@@ -587,7 +587,7 @@ const Navbar = () => {
                         {user.avatar ? (
                           <img
                             src={user.avatar}
-                            alt={user.name}
+                            alt={user.name || "User"}
                             className="w-full h-full rounded-full object-cover"
                           />
                         ) : (

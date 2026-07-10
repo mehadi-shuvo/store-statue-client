@@ -3,7 +3,23 @@
 import { useEffect, useState } from "react";
 import { TProduct } from "@/types/top-up/productsType";
 import ProductCardSm from "./ProductCardSm";
-import { apiUrl } from "@/lib/api";
+import { apiUrl, fetchApiJson } from "@/lib/api";
+
+interface ProductsPayload {
+  data?: TProduct[] | { data?: TProduct[] };
+}
+
+function getProductsPayload(payload: ProductsPayload) {
+  if (Array.isArray(payload.data)) {
+    return payload.data;
+  }
+
+  if (payload.data && !Array.isArray(payload.data)) {
+    return payload.data.data ?? [];
+  }
+
+  return [];
+}
 
 export const ProductsGrid = () => {
   const [products, setProducts] = useState<TProduct[]>([]);
@@ -15,22 +31,17 @@ export const ProductsGrid = () => {
       try {
         setLoading(true);
 
-        const res = await fetch(apiUrl("/api/products?limit=9&page=1"));
+        const json = await fetchApiJson<ProductsPayload>(
+          apiUrl("/api/products?limit=9&page=1"),
+          undefined,
+          "Failed to fetch products",
+        );
 
-        const json = await res.json();
-
-        console.log("API Response:", json);
-
-        // ✅ Correct extraction
-        const productsArray = Array.isArray(json.data)
-          ? json.data
-          : Array.isArray(json.data?.data)
-            ? json.data.data
-            : [];
-
-        setProducts(productsArray);
-      } catch (err: any) {
-        setError(err.message || "Failed to fetch products");
+        setProducts(getProductsPayload(json));
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch products",
+        );
       } finally {
         setLoading(false);
       }
