@@ -8,8 +8,10 @@ import React, {
   useState,
 } from "react";
 import { useAuth } from "./AuthContext";
-import { apiUrl, fetchApiJson, getApiErrorMessage } from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/api";
 import { useToast } from "./ToastContext";
+import { customerService } from "@/services/api/customer.service";
+import type { AddCartItemInput, CartItem as ApiCartItem } from "@/types/api";
 
 interface CartItem {
   id: string;
@@ -34,18 +36,35 @@ interface CartContextType {
   totalQuantity: number;
   fetchCart: () => Promise<void>;
   addToCart: (productId: string, quantity?: number) => Promise<void>;
+  addDigitalItem: (input: AddCartItemInput) => Promise<void>;
   updateQuantity: (itemId: string, quantity: number) => Promise<void>;
   removeItem: (itemId: string) => Promise<void>;
   subtotal: number;
 }
 
-interface CartPayload {
-  data?: {
-    items?: CartItem[];
+const CartContext = createContext<CartContextType | null>(null);
+
+function toCartItem(item: ApiCartItem): CartItem {
+  const product = item.giftCardProduct ?? item.gameTopUpProduct ?? item.subscriptionProduct;
+  const option = item.giftCardDenomination ?? item.gameTopUpPackage ?? item.subscriptionPlan;
+  const image = item.giftCardProduct?.image ?? item.gameTopUpProduct?.logo ?? item.subscriptionProduct?.logo;
+  return {
+    id: item.id,
+    quantity: item.quantity,
+    productId: item.giftCardProductId ?? item.gameTopUpProductId ?? item.subscriptionProductId ?? "",
+    giftCardDenominationId: item.giftCardDenominationId,
+    gameTopUpPackageId: item.gameTopUpPackageId,
+    subscriptionPlanId: item.subscriptionPlanId,
+    unitPrice: Number(item.unitPrice),
+    product: product ? {
+      id: product.id,
+      title: product.title,
+      price: Number(item.unitPrice),
+      stockQuantity: option?.stockQuantity ?? Number.MAX_SAFE_INTEGER,
+      photos: image ? [image] : [],
+    } : undefined,
   };
 }
-
-const CartContext = createContext<CartContextType | null>(null);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -57,13 +76,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   // Fetch Cart
   const fetchCart = useCallback(async () => {
     try {
-      const data = await fetchApiJson<CartPayload>(
-        apiUrl("/api/user-cart"),
-        undefined,
-        "Could not load your cart.",
-      );
-
-      const items = data.data?.items ?? [];
+      const data = await customerService.cart();
+      const items = data.items.map(toCartItem);
 
       setCartItems(items);
 
@@ -77,28 +91,14 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [toast]);
 
-  // Add to Cart
-  const addToCart = async (productId: string, quantity = 1) => {
+  const addDigitalItem = async (input: AddCartItemInput) => {
     try {
       if (!user?.id) {
         toast.warning("Login required", "Please login before adding items.");
         return;
       }
 
-      await fetchApiJson(
-        apiUrl(`/api/user-cart/add`),
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            productId,
-            quantity,
-          }),
-        },
-        "Could not add this item to your cart.",
-      );
+      await customerService.addCartItem(input);
 
       await fetchCart();
       toast.success("Added to cart", "The item is now in your cart.");
@@ -108,6 +108,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         getApiErrorMessage(error, "Could not add this item to your cart."),
       );
     }
+  };
+
+  // Legacy product cards do not select a required digital option. Keep them safe
+  // and guide callers toward addDigitalItem instead of sending an invalid request.
+  const addToCart = async () => {
+    toast.warning("Choose an option", "Select a denomination, top-up package, or subscription plan first.");
   };
 
   const updateQuantity = async (itemId: string, quantity: number) => {
@@ -124,21 +130,15 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     try {
-      await fetchApiJson(
-        apiUrl(`/api/user-cart/update`),
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            productId: item.productId,
-            giftCardDenominationId: item.giftCardDenominationId ?? undefined,
-            gameTopUpPackageId: item.gameTopUpPackageId ?? undefined,
-            subscriptionPlanId: item.subscriptionPlanId ?? undefined,
-            quantity,
-          }),
-        },
-        "Could not update item quantity.",
-      );
+      const identity = item.giftCardDenominationId
+        ? { productId: item.productId, giftCardDenominationId: item.giftCardDenominationId }
+        : item.gameTopUpPackageId
+          ? { productId: item.productId, gameTopUpPackageId: item.gameTopUpPackageId }
+          : item.subscriptionPlanId
+            ? { productId: item.productId, subscriptionPlanId: item.subscriptionPlanId }
+            : null;
+      if (!identity) throw new Error("Cart item option data is missing.");
+      await customerService.updateCartItem({ ...identity, quantity });
 
       await fetchCart();
       toast.success("Cart updated");
@@ -163,20 +163,15 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     try {
-      await fetchApiJson(
-        apiUrl(`/api/user-cart/remove`),
-        {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            productId: item.productId,
-            giftCardDenominationId: item.giftCardDenominationId ?? undefined,
-            gameTopUpPackageId: item.gameTopUpPackageId ?? undefined,
-            subscriptionPlanId: item.subscriptionPlanId ?? undefined,
-          }),
-        },
-        "Could not remove this item.",
-      );
+      const identity = item.giftCardDenominationId
+        ? { productId: item.productId, giftCardDenominationId: item.giftCardDenominationId }
+        : item.gameTopUpPackageId
+          ? { productId: item.productId, gameTopUpPackageId: item.gameTopUpPackageId }
+          : item.subscriptionPlanId
+            ? { productId: item.productId, subscriptionPlanId: item.subscriptionPlanId }
+            : null;
+      if (!identity) throw new Error("Cart item option data is missing.");
+      await customerService.removeCartItem(identity);
 
       await fetchCart();
       toast.success("Removed from cart");
@@ -191,28 +186,29 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const subtotal = cartItems.reduce((sum, item) => {
     const product = item.product;
 
-    if (!product) {
-      return sum;
-    }
+    if (!product) return sum;
 
+    // Get the base price (either unitPrice or product.price)
+    const basePrice = item.unitPrice ?? product.price;
+
+    // Apply the discount to that base price if an offer exists
     const price =
-      item.unitPrice ??
-      (product.offerPercent && product.offerPercent > 0
-        ? product.price - (product.price * product.offerPercent) / 100
-        : product.price);
+      product.offerPercent && product.offerPercent > 0
+        ? basePrice - (basePrice * product.offerPercent) / 100
+        : basePrice;
 
     return sum + price * item.quantity;
   }, 0);
 
   useEffect(() => {
-    if (!user?.id) {
+    if (!user?.id || user.role !== "CUSTOMER") {
       setCartItems([]);
       setTotalQuantity(0);
       return;
     }
 
     fetchCart();
-  }, [fetchCart, user?.id]);
+  }, [fetchCart, user?.id, user?.role]);
 
   return (
     <CartContext.Provider
@@ -221,6 +217,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         totalQuantity,
         fetchCart,
         addToCart,
+        addDigitalItem,
         updateQuantity,
         subtotal,
         removeItem,

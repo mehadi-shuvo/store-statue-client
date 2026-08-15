@@ -154,12 +154,10 @@ export default function ProfilePage() {
               Manage the customer details connected to your secure checkout.
             </p>
           </div>
-          <Link
-            href="/cart"
-            className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-          >
-            View cart
-          </Link>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/profile/gift-card-orders" className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Gift card orders</Link>
+            <Link href="/cart" className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">View cart</Link>
+          </div>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">

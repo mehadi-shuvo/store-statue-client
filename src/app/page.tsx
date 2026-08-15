@@ -1,12 +1,8 @@
 import FeaturedCategories from "@/components/FeaturedCategories";
 import GiftCArdSm from "@/components/giftCard/GiftCardSm";
-import GiftCardTwo from "@/components/GiftCardTwo";
 import ImageSlider from "@/components/ImageSlider";
-import ItemsTab from "@/components/ItemsTab";
-import ProductCard from "@/components/ProductCard";
 import { ProductsGrid } from "@/components/ProductsGrid";
 import SectionHeader from "@/components/SectionHeader";
-import TopUpSection from "@/components/TopUpSection";
 import TrustBar from "@/components/trustBar/TrustBar";
 import WhyChooseUs from "@/components/WhyChooseUs";
 import { giftCards } from "@/utils/giftCardData";

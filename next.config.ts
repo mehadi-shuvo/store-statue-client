@@ -1,15 +1,17 @@
 import type { NextConfig } from "next";
 
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-const apiHostname = apiBaseUrl ? new URL(apiBaseUrl).hostname : null;
+const apiBaseUrl =
+  process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL;
+const parsedApiUrl = apiBaseUrl ? new URL(apiBaseUrl) : null;
 type RemotePattern = NonNullable<
   NonNullable<NextConfig["images"]>["remotePatterns"]
 >[number];
 
-function createRemotePattern(hostname: string): RemotePattern {
+function createRemotePattern(url: URL): RemotePattern {
   return {
-    protocol: "https",
-    hostname,
+    protocol: url.protocol === "http:" ? "http" : "https",
+    hostname: url.hostname,
+    port: url.port,
     pathname: "/**",
   };
 }
@@ -30,7 +32,7 @@ const remotePatterns: NonNullable<NextConfig["images"]>["remotePatterns"] = [
     hostname: "images.unsplash.com",
     pathname: "/**",
   },
-  ...(apiHostname ? [createRemotePattern(apiHostname)] : []),
+  ...(parsedApiUrl ? [createRemotePattern(parsedApiUrl)] : []),
 ];
 
 const nextConfig: NextConfig = {

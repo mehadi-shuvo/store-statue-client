@@ -6,9 +6,11 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.101.4",
     "daisyui": "^5.1.29",
     "js-cookie": "^3.0.5",
     "lucide-react": "^1.7.0",
@@ -20,13 +22,18 @@
     "@eslint/eslintrc": "^3",
     "@infocyph/envshield": "^1.0.4",
     "@tailwindcss/postcss": "^4.1.14",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.2",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.0.5",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
+    "jsdom": "^30.0.1",
     "tailwindcss": "^4.1.14",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }

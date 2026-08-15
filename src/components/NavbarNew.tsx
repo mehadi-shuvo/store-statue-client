@@ -9,6 +9,7 @@ import { usePathname, useRouter } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
 import NavItems from "./navbar/NavItems";
 import GlobalSearch from "./navbar/GlobalSearch";
+import { useGiftCardCart } from "@/hooks/api/use-gift-card-api";
 
 const NavbarNew = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -22,6 +23,10 @@ const NavbarNew = () => {
   const toast = useToast();
   const pathname = usePathname();
   const router = useRouter();
+  const giftCardCart = useGiftCardCart(Boolean(user?.id && user.role === "CUSTOMER"));
+  const displayedCartQuantity = giftCardCart.data
+    ? giftCardCart.data.items.reduce((sum, item) => sum + item.quantity, 0)
+    : totalQuantity;
 
   const handleLogout = async () => {
     await logout();
@@ -161,9 +166,9 @@ const NavbarNew = () => {
                   d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
                 />
               </svg>
-              {totalQuantity > 0 && (
+              {displayedCartQuantity > 0 && (
                 <span className="absolute -top-1 -right-1 bg-gradient-to-r from-purple-600 to-blue-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full text-white shadow-lg min-w-[18px] text-center">
-                  {totalQuantity > 99 ? "99+" : totalQuantity}
+                  {displayedCartQuantity > 99 ? "99+" : displayedCartQuantity}
                 </span>
               )}
             </Link>
@@ -219,7 +224,7 @@ const NavbarNew = () => {
                             My Profile
                           </Link>
                           <Link
-                            href="/orders"
+                            href="/profile/gift-card-orders"
                             className="dropdown-item flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition"
                           >
                             <svg
@@ -235,7 +240,7 @@ const NavbarNew = () => {
                                 d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
                               />
                             </svg>
-                            My Orders
+                            Gift Card Orders
                           </Link>
                           <Link
                             href="/wishlist"

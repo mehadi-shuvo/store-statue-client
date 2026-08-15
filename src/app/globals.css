@@ -14,10 +14,47 @@
   }
 }
 
+@keyframes payment-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 .dropdown-item {
   @apply block px-4 py-2 text-sm text-white hover:bg-slate-800 transition;
 }
 
 .animate-fade-in {
   animation: fade-in 0.3s ease-out;
+}
+
+.animate-payment-pop {
+  animation: payment-pop 0.55s ease-out;
+}
+
+.admin-canvas {
+  background:
+    radial-gradient(circle at 85% -10%, rgb(219 234 254 / 0.65), transparent 28rem),
+    #f6f8fc;
+  color: #172033;
+}
+
+.admin-canvas button, .admin-canvas a, .admin-canvas input, .admin-canvas select, .admin-canvas textarea {
+  outline-offset: 3px;
+}
+
+.admin-canvas :focus-visible { outline: 2px solid #2563eb; }
+.admin-dark { filter: invert(.9) hue-rotate(180deg); }
+.admin-dark img, .admin-dark svg { filter: invert(1) hue-rotate(180deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }

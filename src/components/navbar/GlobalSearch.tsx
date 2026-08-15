@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
-import { apiUrl } from "@/lib/api";
+import { publicService } from "@/services/api/public.service";
 
 export default function GlobalSearch() {
   const router = useRouter();
@@ -32,29 +32,13 @@ export default function GlobalSearch() {
 
       setIsLoading(true);
       try {
-        const res = await fetch(
-          apiUrl(`/api/products?search=${encodeURIComponent(debouncedQuery)}`),
-        );
-        const data = await res.json();
-
-        // Extract product names for suggestions based on your API structure
-        let products = [];
-        if (data?.data?.data?.data) {
-          products = data.data.data.data;
-        } else if (data?.data?.data) {
-          products = data.data.data;
-        } else if (data?.data) {
-          products = data.data;
-        } else if (Array.isArray(data)) {
-          products = data;
-        } else {
-          products = [];
-        }
-
-        // Get unique product names for suggestions
-        const productNames = products
-          .map((product: any) => product.name)
-          .slice(0, 5);
+        const products = await publicService.products({
+          search: debouncedQuery,
+          limit: 5,
+        });
+        const productNames = [
+          ...new Set(products.data.map((product) => product.title)),
+        ];
         setSuggestions(productNames);
       } catch (error) {
         console.error("Failed to fetch suggestions:", error);

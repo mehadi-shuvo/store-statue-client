@@ -3,18 +3,14 @@
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { apiUrl } from "@/lib/api";
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-}
+import ProductCardSm from "@/components/ProductCardSm";
+import { TProduct } from "@/types/top-up/productsType";
 
 export default function ProductsClientPage() {
   const searchParams = useSearchParams();
   const search = searchParams.get("search") || "";
 
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<TProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +32,7 @@ export default function ProductsClientPage() {
 
         const json = await res.json();
 
-        let productsData: Product[] = [];
+        let productsData: TProduct[] = [];
 
         if (json?.data?.data?.data) {
           productsData = json.data.data.data;
@@ -56,7 +52,9 @@ export default function ProductsClientPage() {
 
         setProducts(productsData);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load products");
+        setError(
+          err instanceof Error ? err.message : "Failed to load products",
+        );
         setProducts([]);
       } finally {
         setLoading(false);
@@ -111,18 +109,7 @@ export default function ProductsClientPage() {
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {products.map((product) => (
-              <div
-                key={product.id}
-                className="bg-slate-900 rounded-xl p-4 hover:transform hover:scale-105 transition-all duration-300"
-              >
-                <div className="h-40 bg-gradient-to-br from-purple-900/20 to-blue-900/20 rounded-lg mb-3 flex items-center justify-center">
-                  <span className="text-4xl">🎮</span>
-                </div>
-                <h2 className="text-white font-semibold mb-2 line-clamp-1">
-                  {product.name}
-                </h2>
-                <p className="text-purple-400 font-bold">${product.price}</p>
-              </div>
+              <ProductCardSm product={product} key={product.id} />
             ))}
           </div>
         </>

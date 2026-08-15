@@ -7,7 +7,11 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { AuthUser, getCustomerProfile, logoutCustomer } from "@/lib/auth";
+import { AuthUser, getSessionProfile, logoutCustomer } from "@/lib/auth";
+import { UNAUTHORIZED_EVENT } from "@/lib/api";
+import { usePathname, useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { sensitiveGiftCardKey } from "@/hooks/api/query-keys";
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -21,13 +25,16 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
 
-    getCustomerProfile()
+    getSessionProfile()
       .then((profile) => {
         if (active) {
           setUser(profile);
@@ -55,11 +62,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const clearAuth = useCallback(() => {
     setUser(null);
-  }, []);
+    queryClient.removeQueries({ queryKey: sensitiveGiftCardKey });
+  }, [queryClient]);
+
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      clearAuth();
+      const loginPath = pathname.startsWith("/admin") ? "/admin/login" : "/login";
+      router.replace(`${loginPath}?reason=session-expired`);
+    };
+    window.addEventListener(UNAUTHORIZED_EVENT, handleUnauthorized);
+    return () => window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorized);
+  }, [clearAuth, pathname, router]);
 
   const refreshProfile = useCallback(async () => {
     try {
-      const profile = await getCustomerProfile();
+      const profile = await getSessionProfile();
       setUser(profile);
       return profile;
     } catch {

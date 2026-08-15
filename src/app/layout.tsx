@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 // import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
-import NavbarNew from "@/components/NavbarNew";
 import { ToastProvider } from "@/context/ToastContext";
+import AppChrome from "@/components/AppChrome";
+import QueryProvider from "@/components/QueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,8 +20,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GameExpress",
-  description: "GameExpress provides gaming and electronics",
+  title: { default: "Ontor", template: "%s · Ontor" },
+  description: "Ontor digital commerce platform",
 };
 
 export default function RootLayout({
@@ -34,17 +34,17 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider>
-          <ToastProvider>
-            <CartProvider>
-              <WishlistProvider>
-                <NavbarNew />
-                {children}
-                <Footer />
-              </WishlistProvider>
-            </CartProvider>
-          </ToastProvider>
-        </AuthProvider>
+        <QueryProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <CartProvider>
+                <WishlistProvider>
+                  <AppChrome>{children}</AppChrome>
+                </WishlistProvider>
+              </CartProvider>
+            </ToastProvider>
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );

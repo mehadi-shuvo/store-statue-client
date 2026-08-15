@@ -13,12 +13,6 @@ interface NavItem {
   icon: React.ReactNode;
 }
 
-interface UserInfo {
-  name?: string;
-  email?: string;
-  avatar?: string;
-}
-
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -310,14 +304,7 @@ const Navbar = () => {
                   aria-label="Profile menu"
                 >
                   <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-                    {user?.avatar ? (
-                      <img
-                        src={user.avatar}
-                        alt={user.name || "User"}
-                        className="w-full h-full rounded-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-white text-sm font-semibold">
+                    <span className="text-white text-sm font-semibold">
                         <svg
                           className="w-5 h-5"
                           fill="currentColor"
@@ -329,8 +316,7 @@ const Navbar = () => {
                             clipRule="evenodd"
                           />
                         </svg>
-                      </span>
-                    )}
+                    </span>
                   </div>
                   <span className="hidden md:block text-sm font-medium">
                     {user?.name || "Account"}
@@ -584,17 +570,9 @@ const Navbar = () => {
                   <>
                     <div className="flex items-center gap-3 px-4 py-3 mb-2">
                       <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-                        {user.avatar ? (
-                          <img
-                            src={user.avatar}
-                            alt={user.name || "User"}
-                            className="w-full h-full rounded-full object-cover"
-                          />
-                        ) : (
-                          <span className="text-white font-semibold">
-                            {user.name?.charAt(0) || "U"}
-                          </span>
-                        )}
+                        <span className="text-white font-semibold">
+                          {user.name?.charAt(0) || "U"}
+                        </span>
                       </div>
                       <div>
                         <p className="text-white font-medium text-sm">

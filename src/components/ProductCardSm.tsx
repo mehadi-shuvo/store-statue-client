@@ -106,7 +106,7 @@ export default function ProductCardSm({ product }: ProductCardProps) {
         {/* Pricing Section */}
         <div className="mb-4 flex items-baseline gap-2">
           <span className="text-lg sm:text-2xl font-extrabold text-gray-900">
-            ${finalPrice.toFixed(2)}
+            ৳ {finalPrice.toFixed(2)}
           </span>
           {hasDiscount && (
             <span className="text-xs sm:text-sm text-gray-400 line-through">
