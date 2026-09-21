@@ -1,5 +1,6 @@
 import { ApiError } from "@/lib/api";
 import type { GiftCardDenomination } from "@/types/gift-card";
+export { formatMoney, formatMoneyCode } from "@/lib/format";
 
 export const giftCardBusinessMessages = {
   GIFT_CARD_NOT_FOUND: "This gift card is no longer available.",
@@ -13,7 +14,11 @@ export const giftCardBusinessMessages = {
   INVALID_GIFT_CARD_CODE_STATE: "That inventory status change is not allowed.",
   DELIVERY_EMAIL_REQUIRED: "Choose your account email or enter a delivery email.",
   ACCOUNT_EMAIL_NOT_AVAILABLE: "Your account does not have an email available for delivery.",
+  EMAIL_NOT_VERIFIED: "Verify your account email before purchasing a gift card.",
+  DENOMINATION_REQUIRED: "Select a gift-card denomination before continuing.",
+  DUPLICATE_CHECKOUT: "This checkout was already processed. Check your orders before trying again.",
   ORDER_NOT_FOUND: "That order could not be found.",
+  DELIVERY_NOT_FOUND: "Verified delivery is not available for this order yet.",
   INVALID_CART: "The cart could not be checked out. Review its items and try again.",
   EMPTY_CART: "Your cart is empty.",
 } as const;
@@ -39,27 +44,6 @@ export function getGiftCardErrorMessage(error: unknown, fallback = "Something we
   const code = getGiftCardErrorCode(error) as GiftCardBusinessCode | null;
   if (code && code in giftCardBusinessMessages) return giftCardBusinessMessages[code];
   return error instanceof Error && error.message ? error.message : fallback;
-}
-
-const currencySymbols: Record<string, string> = { BDT: "৳", USD: "$", EUR: "€", GBP: "£" };
-
-export function formatMoney(value: string | number | null | undefined, currency: string) {
-  if (value == null || value === "") return "—";
-  const raw = String(value).trim();
-  const numeric = Number(raw);
-  if (!Number.isFinite(numeric)) return "—";
-  const formatted = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(numeric);
-  const normalizedCurrency = currency.trim().toUpperCase();
-  const symbol = currencySymbols[normalizedCurrency];
-  return normalizedCurrency ? `${symbol ?? `${normalizedCurrency} `}${formatted}` : "—";
-}
-
-export function formatMoneyCode(value: string | number | null | undefined, currency: string) {
-  if (value == null || value === "") return "—";
-  const numeric = Number(String(value).trim());
-  const normalizedCurrency = currency.trim().toUpperCase();
-  if (!Number.isFinite(numeric) || !normalizedCurrency) return "—";
-  return `${normalizedCurrency} ${new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(numeric)}`;
 }
 
 function decimalParts(value: string) {

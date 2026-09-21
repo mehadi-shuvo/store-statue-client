@@ -23,7 +23,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-const statuses: PaymentStatus[] = ["PENDING", "INITIATED", "PROCESSING", "PAID", "FAILED", "CANCELLED", "REFUNDED", "PARTIALLY_REFUNDED"];
+const statuses: PaymentStatus[] = ["REFUND_PENDING", "REFUNDED", "REFUND_FAILED"];
 
 export default function PaymentDetailsPage() {
   const { paymentId } = useParams<{ paymentId: string }>();
@@ -34,7 +34,7 @@ export default function PaymentDetailsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
-    paymentStatus: "PAID" as PaymentStatus,
+    paymentStatus: "REFUND_PENDING" as PaymentStatus,
     transactionId: "",
     providerPaymentId: "",
     failureReason: "",
@@ -47,7 +47,7 @@ export default function PaymentDetailsPage() {
       const nextPayment = await getPaymentById(paymentId);
       setPayment(nextPayment ?? null);
       setForm({
-        paymentStatus: nextPayment?.paymentStatus ?? "PAID",
+        paymentStatus: statuses.includes(nextPayment?.paymentStatus as PaymentStatus) ? nextPayment!.paymentStatus : "REFUND_PENDING",
         transactionId: nextPayment?.transactionId ?? "",
         providerPaymentId: nextPayment?.providerPaymentId ?? "",
         failureReason: nextPayment?.failureReason ?? "",

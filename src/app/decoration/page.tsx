@@ -144,7 +144,7 @@ export default function DecorationPage() {
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(236,72,153,0.12),_transparent_34%),linear-gradient(180deg,_#f8fafc_0%,_#fff7fb_100%)]">
-      <section className="pt-[148px] pb-12">
+      <section className="pt-20 pb-12">
         <div className="w-11/12 lg:w-4/5 mx-auto">
           <div className="overflow-hidden rounded-[2rem] border border-white/70 bg-slate-950 text-white shadow-2xl">
             <div className="grid gap-0 lg:grid-cols-[1.25fr_0.75fr]">

@@ -5,7 +5,7 @@ export default function ProductsPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-slate-950 pt-[148px]">
+        <div className="min-h-screen bg-slate-950 pt-20">
           <div className="w-[90%] max-w-7xl mx-auto py-10">
             <div className="h-8 w-64 rounded-xl bg-slate-800/70 animate-pulse" />
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

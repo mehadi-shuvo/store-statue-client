@@ -61,6 +61,7 @@ export class ApiError extends Error {
   readonly statusCode: number;
   readonly details: ApiFieldError[];
   readonly retryAfterSeconds: number | null;
+  readonly code: string | null;
   readonly payload: unknown;
 
   constructor(options: {
@@ -68,6 +69,7 @@ export class ApiError extends Error {
     status: number;
     details?: ApiFieldError[];
     retryAfterSeconds?: number | null;
+    code?: string | null;
     payload?: unknown;
     cause?: unknown;
   }) {
@@ -77,6 +79,7 @@ export class ApiError extends Error {
     this.statusCode = options.status;
     this.details = options.details ?? [];
     this.retryAfterSeconds = options.retryAfterSeconds ?? null;
+    this.code = options.code ?? null;
     this.payload = options.payload;
   }
 
@@ -210,6 +213,10 @@ export async function apiRequest<T>(
       message: getApiErrorMessage(payload, `Request failed with status ${response.status}.`),
       details: fieldErrors(payload),
       retryAfterSeconds: Number.isFinite(parsedRetryAfter) ? parsedRetryAfter : null,
+      code:
+        payload && typeof payload === "object" && typeof (payload as { code?: unknown }).code === "string"
+          ? (payload as { code: string }).code
+          : null,
       payload,
     });
   }

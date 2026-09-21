@@ -3,7 +3,6 @@
 import { ErrorAlert, PaymentShell } from "@/components/payment/PaymentUi";
 
 export default function PaymentError({
-  error,
   reset,
 }: {
   error: Error & { digest?: string };
@@ -17,7 +16,7 @@ export default function PaymentError({
     >
       <ErrorAlert
         title="Payment screen unavailable"
-        message={error.message || "A temporary issue prevented this page from loading."}
+        message="A temporary issue prevented this page from loading. Your payment status has not been changed."
         action={
           <button
             type="button"

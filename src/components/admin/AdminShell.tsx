@@ -3,48 +3,12 @@
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
 import { getAdminProfile, type AdminProfile } from "@/lib/admin";
-import {
-  Bell, ChevronDown, ChevronRight, CircleGauge, ClipboardList, CreditCard,
-  FileClock, Gift, KeyRound, LayoutGrid, LogOut, Menu, Moon, PackageSearch,
-  PanelLeftClose, PanelLeftOpen, Search, Shapes, ShieldCheck, Sun,
-  TicketCheck, Truck, UserCog, Users, Warehouse, X, Zap,
-} from "lucide-react";
+import { Bell, ChevronDown, ChevronRight, LogOut, Menu, Moon, PanelLeftClose, PanelLeftOpen, Search, Sun, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { LoadingState } from "./AdminUi";
-
-type NavItem = { href: string; label: string; icon: typeof CircleGauge; superOnly?: boolean };
-const sections: Array<{ label: string; items: NavItem[] }> = [
-  { label: "Workspace", items: [{ href: "/admin", label: "Overview", icon: CircleGauge }] },
-  { label: "Catalog", items: [
-    { href: "/admin/products", label: "All products", icon: LayoutGrid },
-    { href: "/admin/gift-cards", label: "Gift cards", icon: Gift },
-    { href: "/admin/products?type=GAME_TOP_UP", label: "Game top-ups", icon: Zap },
-    { href: "/admin/products?type=SUBSCRIPTION", label: "Subscriptions", icon: TicketCheck },
-    { href: "/admin/categories", label: "Categories", icon: Shapes },
-    { href: "/admin/gift-card-inventory", label: "Gift-card inventory", icon: Warehouse },
-    { href: "/admin/inventory", label: "All inventory", icon: Warehouse },
-  ]},
-  { label: "Commerce", items: [
-    { href: "/admin/gift-card-orders", label: "Gift-card orders", icon: Gift },
-    { href: "/admin/orders", label: "Orders", icon: ClipboardList },
-    { href: "/admin/delivery", label: "Delivery queue", icon: Truck },
-    { href: "/admin/payments", label: "Payments", icon: CreditCard },
-  ]},
-  { label: "People", items: [
-    { href: "/admin/users", label: "Customers", icon: Users },
-    { href: "/admin/admins", label: "Admin accounts", icon: ShieldCheck, superOnly: true },
-  ]},
-  { label: "Monitoring", items: [
-    { href: "/admin/audit-logs", label: "Audit logs", icon: FileClock },
-    { href: "/admin/logs", label: "Application logs", icon: PackageSearch },
-  ]},
-  { label: "Settings", items: [
-    { href: "/admin/profile", label: "Profile", icon: UserCog },
-    { href: "/admin/security", label: "Security", icon: KeyRound },
-  ]},
-];
+import { adminNavigation, isAdminNavItemActive } from "./admin-navigation";
 
 export default function AdminShell({ children, superAdminOnly = false, allowedRoles }: { children: ReactNode; superAdminOnly?: boolean; allowedRoles?: Array<"ADMIN" | "SUPER_ADMIN"> }) {
   const router = useRouter();
@@ -83,7 +47,7 @@ export default function AdminShell({ children, superAdminOnly = false, allowedRo
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  const available = useMemo(() => sections.flatMap(section => section.items).filter(item => (!item.superOnly || admin?.role === "SUPER_ADMIN") && item.label.toLowerCase().includes(query.toLowerCase())), [admin?.role, query]);
+  const available = useMemo(() => adminNavigation.flatMap(section => section.items).filter(item => (!item.superOnly || admin?.role === "SUPER_ADMIN") && item.label.toLowerCase().includes(query.toLowerCase())), [admin?.role, query]);
   const crumbs = pathname.split("/").filter(Boolean).slice(1);
   const handleLogout = async () => { await logout(); toast.success("Signed out"); router.replace("/admin/login"); router.refresh(); };
 
@@ -97,13 +61,12 @@ export default function AdminShell({ children, superAdminOnly = false, allowedRo
       <button className="ml-auto rounded-lg p-2 text-slate-400 hover:bg-white/10 hover:text-white lg:hidden" onClick={() => setMobileOpen(false)} aria-label="Close navigation"><X className="h-5 w-5" /></button>
     </div>
     <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Admin navigation">
-      {sections.map(section => <div key={section.label} className="mb-5">
+      {adminNavigation.map(section => <div key={section.label} className="mb-5">
         {!collapsed && <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[.18em] text-slate-500">{section.label}</p>}
         <div className="space-y-1">{section.items.filter(item => !item.superOnly || admin.role === "SUPER_ADMIN").map(item => {
-          const cleanHref = item.href.split("?")[0];
-          const active = pathname === cleanHref || (cleanHref !== "/admin" && pathname.startsWith(`${cleanHref}/`));
+          const active = isAdminNavItemActive(pathname, item);
           const Icon = item.icon;
-          return <Link title={collapsed ? item.label : undefined} onClick={() => setMobileOpen(false)} key={item.href} href={item.href} className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${active ? "bg-blue-500 text-white shadow-md shadow-blue-950/30" : "text-slate-400 hover:bg-white/5 hover:text-white"}`}><Icon className="h-[18px] w-[18px] shrink-0" />{!collapsed && <span>{item.label}</span>}{!collapsed && active && <ChevronRight className="ml-auto h-4 w-4" />}</Link>;
+          return <Link aria-current={active ? "page" : undefined} title={collapsed ? item.label : undefined} onClick={() => setMobileOpen(false)} key={item.href} href={item.href} className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${active ? "bg-blue-500 text-white shadow-md shadow-blue-950/30" : "text-slate-400 hover:bg-white/5 hover:text-white"}`}><Icon className="h-[18px] w-[18px] shrink-0" />{!collapsed && <span>{item.label}</span>}{!collapsed && active && <ChevronRight className="ml-auto h-4 w-4" />}</Link>;
         })}</div>
       </div>)}
     </nav>

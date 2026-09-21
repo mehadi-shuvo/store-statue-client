@@ -1,8 +1,8 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { customerService, type LoginInput, type RegisterInput, type ResetPasswordInput } from "@/services/api/customer.service";
-import type { AddCartItemInput, CartItemIdentity, DigitalProductType, MockPaymentScenario, UpdateCartItemInput } from "@/types/api";
+import { customerService, type LoginInput, type RegisterInput, type ResetPasswordInput, type VerifyEmailInput } from "@/services/api/customer.service";
+import type { AddCartItemInput, CartItemIdentity, DigitalProductType, UpdateCartItemInput } from "@/types/api";
 import { apiKeys } from "./query-keys";
 
 export function useCustomerProfile(enabled = true) {
@@ -11,6 +11,8 @@ export function useCustomerProfile(enabled = true) {
 
 export function useLogin() { return useMutation({ mutationFn: (input: LoginInput) => customerService.login(input) }); }
 export function useRegister() { return useMutation({ mutationFn: (input: RegisterInput) => customerService.register(input) }); }
+export function useVerifyEmail() { return useMutation({ mutationFn: (input: VerifyEmailInput) => customerService.verifyEmail(input) }); }
+export function useResendVerification() { return useMutation({ mutationFn: (email: string) => customerService.resendVerification(email) }); }
 export function useForgotPassword() { return useMutation({ mutationFn: (email: string) => customerService.forgotPassword(email) }); }
 export function useResetPassword() { return useMutation({ mutationFn: (input: ResetPasswordInput) => customerService.resetPassword(input) }); }
 
@@ -74,14 +76,6 @@ export function useCreatePayment() {
   return useMutation({
     mutationFn: customerService.createPayment,
     onSuccess: (payment) => client.invalidateQueries({ queryKey: apiKeys.payment(payment.paymentId) }),
-  });
-}
-
-export function useExecutePayment() {
-  const client = useQueryClient();
-  return useMutation({
-    mutationFn: ({ paymentId, scenario }: { paymentId: string; scenario?: MockPaymentScenario }) => customerService.executePayment(paymentId, scenario),
-    onSuccess: (_, input) => client.invalidateQueries({ queryKey: apiKeys.payment(input.paymentId) }),
   });
 }
 

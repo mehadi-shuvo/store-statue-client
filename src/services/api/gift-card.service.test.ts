@@ -20,7 +20,19 @@ describe("giftCardService", () => {
   });
 
   it("uses the exact instant-buy and cart contracts", async () => {
-    const fetchMock = mockApi({ id: "o1" });
+    const fetchMock = mockApi({
+      id: "o1",
+      orderId: "o1",
+      orderNumber: "GC-1",
+      deliveryEmail: "customer@example.com",
+      totalBdt: "100.00",
+      status: "PENDING",
+      paymentStatus: "PROCESSING",
+      paymentId: "payment-1",
+      transactionId: "payment-1",
+      paymentUrl: "https://sandbox.aamarpay.com/checkout/payment-1",
+      paymentExpiresAt: "2026-09-15T10:05:00.000Z",
+    });
     await giftCardService.instantBuy({ denominationId: "d1", quantity: 1, useAccountEmail: false, deliveryEmail: "customer@example.com" });
     await giftCardService.addCartItem("d1", 1);
     await giftCardService.checkout({ useAccountEmail: true });
@@ -31,6 +43,51 @@ describe("giftCardService", () => {
     expect(JSON.parse(String(calls[1][1].body))).toEqual({ denominationId: "d1", quantity: 1 });
     expect(calls[2][0].endsWith("/cart/checkout")).toBe(true);
     expect(JSON.parse(String(calls[2][1].body))).toEqual({ useAccountEmail: true });
+  });
+
+  it("creates a buy-now checkout without sending a frontend amount", async () => {
+    const fetchMock = mockApi({
+      orderId: "order-1",
+      paymentId: "payment-1",
+      transactionId: "payment-1",
+      paymentUrl: "https://sandbox.aamarpay.com/checkout/payment-1",
+      paymentExpiresAt: "2026-09-15T10:05:00.000Z",
+    });
+    await giftCardService.createBuyNowCheckout("denomination-1");
+    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url.endsWith("/checkout/buy-now")).toBe(true);
+    expect(JSON.parse(String(init.body))).toEqual({ productId: "denomination-1" });
+    expect(new Headers(init.headers).get("Idempotency-Key")).toBeTruthy();
+  });
+
+  it("rejects malformed or insecure checkout redirects", async () => {
+    mockApi({ orderId: "order-1", paymentId: "payment-1", transactionId: "payment-1", paymentUrl: "javascript:alert(1)" });
+    await expect(giftCardService.createBuyNowCheckout("denomination-1"))
+      .rejects.toThrow(/payment URL/i);
+  });
+
+  it("validates an owned paid delivery response before returning codes", async () => {
+    const fetchMock = mockApi({
+      orderId: "order-1",
+      orderNumber: "GX-1001",
+      products: [{
+        name: "Apple Gift Card",
+        brand: "Apple",
+        value: "5.00",
+        currency: "USD",
+        delivery: [{ code: "APPLE-SECRET-ABCD", pin: null, expiryDate: null, emailStatus: "DELIVERED" }],
+      }],
+      payment: { provider: "AAMARPAY", trxId: "TRX-1001" },
+    });
+    const result = await giftCardService.getOrderDelivery("order-1");
+    expect(result.status).toBe("COMPLETED");
+    expect(fetchMock.mock.calls[0][0].endsWith("/orders/order-1/delivery")).toBe(true);
+  });
+
+  it("rejects delivery returned for a different order", async () => {
+    mockApi({ orderId: "other-order", status: "PROCESSING" });
+    await expect(giftCardService.getOrderDelivery("order-1"))
+      .rejects.toThrow(/different order/i);
   });
 
   it("uses dedicated product create, update, and archive endpoints", async () => {

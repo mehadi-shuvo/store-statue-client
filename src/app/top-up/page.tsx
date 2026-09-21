@@ -1,12 +1,11 @@
-import TopUpSection from "@/components/TopUpSection";
-import React from "react";
+import type { Metadata } from "next";
+import GameTopUpCatalogPage from "@/components/game-top-up/GameTopUpCatalogPage";
 
-const page = () => {
-  return (
-    <div className="mt-[148px]">
-      <TopUpSection />
-    </div>
-  );
+export const metadata: Metadata = {
+  title: "Game Top-Ups",
+  description: "Browse supported games, compare Top-Up packages in BDT, and review the player information required by GameXpress.",
 };
 
-export default page;
+export default function GameTopUpPage() {
+  return <GameTopUpCatalogPage />;
+}

@@ -1,71 +1,54 @@
-import FeaturedCategories from "@/components/FeaturedCategories";
-import GiftCArdSm from "@/components/giftCard/GiftCardSm";
-import ImageSlider from "@/components/ImageSlider";
-import { ProductsGrid } from "@/components/ProductsGrid";
-import SectionHeader from "@/components/SectionHeader";
-import TrustBar from "@/components/trustBar/TrustBar";
-import WhyChooseUs from "@/components/WhyChooseUs";
-import { giftCards } from "@/utils/giftCardData";
+import type { Metadata } from "next";
+import AccountCallout from "@/components/home/AccountCallout";
+import FaqSection from "@/components/home/FaqSection";
+import FeaturedGiftCards from "@/components/home/FeaturedGiftCards";
+import FeaturedTopUps from "@/components/home/FeaturedTopUps";
+import FinalCallToAction from "@/components/home/FinalCallToAction";
+import HeroSection from "@/components/home/HeroSection";
+import HowItWorks from "@/components/home/HowItWorks";
+import ServiceSelector from "@/components/home/ServiceSelector";
+import TrustSection from "@/components/home/TrustSection";
+import { isPublicFeatureEnabled } from "@/features/feature-config";
 
-export default async function Home() {
-  const sliderImages = [
-    {
-      src: "/slider1.jpg",
-      alt: "Beautiful landscape with mountains",
-    },
-    {
-      src: "/slider2.jpg",
-      alt: "City skyline at night",
-    },
-    {
-      src: "/slider3.jpg",
-      alt: "Beach with palm trees",
-    },
-  ];
+export const metadata: Metadata = {
+  title: "Digital Gift Cards & Game Top-Ups",
+  description:
+    "Browse digital Gift Cards and supported Game Top-Ups with clear BDT pricing and account-based order workflows from GameXpress.",
+};
+
+export default function Home() {
+  const giftCardsEnabled = isPublicFeatureEnabled("giftCards");
+  const gameTopUpEnabled = isPublicFeatureEnabled("gameTopUp");
+
   return (
-    <div>
-      <div className="w-4/5 mx-auto pt-[148px] pb-10">
-        <ImageSlider images={sliderImages} autoPlayInterval={9000} />
-      </div>
-
-      <TrustBar />
-
-      <FeaturedCategories />
-
-      {/* ==== Latest Accessories Section ==== */}
-      <SectionHeader
-        title="Latest Accessories"
-        subtitle="Cutting-edge gadgets for modern life"
-        href="/accessories"
-        badge="New"
+    <main className="min-h-screen bg-white pt-[72px]">
+      <HeroSection
+        giftCardsEnabled={giftCardsEnabled}
+        gameTopUpEnabled={gameTopUpEnabled}
       />
-
-      <ProductsGrid />
-
-      {/* Gift Card Grid Section */}
-      <SectionHeader
-        title="Popular Gift Cards"
-        subtitle="Top brands at the best prices"
-        href="/gift-cards"
+      <ServiceSelector
+        giftCardsEnabled={giftCardsEnabled}
+        gameTopUpEnabled={gameTopUpEnabled}
       />
-
-      <section className="w-4/5 mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {giftCards.map((card) => (
-            <GiftCArdSm
-              key={card.id}
-              id={card.id}
-              brand={card.brand}
-              title={card.title}
-              image={card.image}
-              startingPrice={card.amounts[0]?.cardUSD || 0}
-              currency={card.currency}
-            />
-          ))}
-        </div>
-      </section>
-
-      <WhyChooseUs />
-    </div>
+      {giftCardsEnabled ? <FeaturedGiftCards /> : null}
+      {gameTopUpEnabled ? <FeaturedTopUps /> : null}
+      <HowItWorks
+        giftCardsEnabled={giftCardsEnabled}
+        gameTopUpEnabled={gameTopUpEnabled}
+      />
+      <TrustSection
+        giftCardsEnabled={giftCardsEnabled}
+        gameTopUpEnabled={gameTopUpEnabled}
+      />
+      <AccountCallout />
+      <FaqSection
+        giftCardsEnabled={giftCardsEnabled}
+        gameTopUpEnabled={gameTopUpEnabled}
+      />
+      <FinalCallToAction
+        giftCardsEnabled={giftCardsEnabled}
+        gameTopUpEnabled={gameTopUpEnabled}
+      />
+    </main>
   );
 }

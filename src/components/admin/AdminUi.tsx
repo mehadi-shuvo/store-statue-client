@@ -2,23 +2,14 @@
 
 import { Loader2, TriangleAlert } from "lucide-react";
 import { ReactNode } from "react";
-
-export const adminCurrencyFormatter = new Intl.NumberFormat("en-BD", {
-  style: "currency",
-  currency: "BDT",
-  maximumFractionDigits: 0,
-});
+import { formatBdt, formatDateTime } from "@/lib/format";
 
 export function formatCurrency(value: number | string | null | undefined) {
-  return adminCurrencyFormatter.format(Number(value || 0));
+  return formatBdt(value);
 }
 
 export function formatDate(value?: string | null) {
-  if (!value) {
-    return "Not available";
-  }
-
-  return new Date(value).toLocaleString();
+  return formatDateTime(value);
 }
 
 export function statusTone(status?: string | boolean | null) {

@@ -9,22 +9,34 @@ export type OrderStatus =
   | "PROCESSING"
   | "COMPLETED"
   | "CANCELLED"
+  | "MANUAL_REVIEW"
+  | "REFUND_PENDING"
   | "REFUNDED"
   | "PARTIALLY_REFUNDED";
 export type PaymentStatus =
+  | "CREATED"
   | "PENDING"
   | "INITIATED"
   | "PROCESSING"
   | "PAID"
   | "FAILED"
   | "CANCELLED"
+  | "EXPIRED"
+  | "UNKNOWN"
+  | "REFUND_PENDING"
   | "REFUNDED"
+  | "REFUND_FAILED"
   | "PARTIALLY_REFUNDED";
 export type DeliveryStatus =
   | "PENDING"
+  | "QUEUED"
   | "PROCESSING"
+  | "PROVIDER_PENDING"
   | "DELIVERED"
   | "FAILED"
+  | "FAILED_RETRYABLE"
+  | "FAILED_FINAL"
+  | "MANUAL_REVIEW"
   | "CANCELLED"
   | "REFUNDED";
 export type ProductType = ProductResourceType;

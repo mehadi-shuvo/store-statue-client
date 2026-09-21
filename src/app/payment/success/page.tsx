@@ -1,32 +1,35 @@
 "use client";
 
-import { Suspense } from "react";
+import { LoadingSpinner, PaymentShell } from "@/components/payment/PaymentUi";
+import PaymentReturnStatus from "@/components/payment/PaymentReturnStatus";
+import { RouteGuard } from "@/components/RouteGuard";
 import { useSearchParams } from "next/navigation";
-import { PaymentShell, ResultPanel } from "@/components/payment/PaymentUi";
+import { Suspense } from "react";
 
 export default function PaymentSuccessPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<SuccessPageFallback />}>
       <PaymentSuccessContent />
     </Suspense>
   );
 }
 
 function PaymentSuccessContent() {
-  const paymentId = useSearchParams().get("paymentId");
+  const orderId = useSearchParams().get("orderId")?.trim() ?? "";
 
   return (
-    <PaymentShell
-      eyebrow="Payment Complete"
-      title="Payment successful"
-      description="Your payment was verified by the backend and the order is ready for fulfilment."
-    >
-      <ResultPanel
-        status="success"
-        title="Thank you for your payment"
-        message="We have confirmed the bKash payment. You can review this transaction from your payment history."
-        paymentId={paymentId}
-      />
+    <RouteGuard roles={["CUSTOMER"]}>
+      <PaymentReturnStatus orderId={orderId} />
+    </RouteGuard>
+  );
+}
+
+function SuccessPageFallback() {
+  return (
+    <PaymentShell eyebrow="Secure delivery" title="Confirming your purchase" description="Preparing the authenticated payment check.">
+      <section className="mx-auto max-w-3xl rounded-[1.75rem] border border-slate-200 bg-white p-8 text-center shadow-sm">
+        <LoadingSpinner label="Preparing verification..." />
+      </section>
     </PaymentShell>
   );
 }

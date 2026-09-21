@@ -55,7 +55,7 @@ const GameTopUpCard = ({
       >
         <Image
           src={topUpDataObject.banner}
-          alt="Genshin Impact Game Art"
+          alt={`${topUpDataObject.name} game art`}
           fill
           className="object-cover mix-blend-overlay opacity-40"
           unoptimized
@@ -107,7 +107,7 @@ const GameTopUpCard = ({
                 )}
                 <div className="text-center">
                   <div className="text-white font-bold text-lg">
-                    ${item.realCurrency}
+                    {topUpDataObject.priceCurrency === "BDT" ? "৳" : "$"}{item.realCurrency.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </div>
                   <div className="text-green-400 text-xs font-semibold">
                     {item.gameCurrency} {topUpDataObject.gameCurrencyName}
@@ -138,9 +138,9 @@ const GameTopUpCard = ({
 
         {/* Action Buttons */}
         <div className="space-y-3">
-          <button className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white py-4 px-6 rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-green-500/25 flex items-center justify-center gap-1 md:gap-3 text-sm md:text-lx">
+          <button disabled={selectedAmount === undefined} className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white py-4 px-6 rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-green-500/25 flex items-center justify-center gap-1 md:gap-3 text-sm md:text-lx disabled:cursor-not-allowed disabled:opacity-50">
             <span className="textarea-md md:text-lx">⚡</span>
-            <span> Instant Top-Up - ${selectedAmount}</span>
+            <span>{selectedAmount === undefined ? "Packages not configured" : `Instant Top-Up - ${topUpDataObject.priceCurrency === "BDT" ? "৳" : "$"}${selectedAmount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}</span>
             <span className="text-yellow-300 hidden md:block">🎁</span>
           </button>
 

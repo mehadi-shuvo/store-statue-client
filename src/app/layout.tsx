@@ -20,8 +20,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: { default: "Ontor", template: "%s · Ontor" },
-  description: "Ontor digital commerce platform",
+  title: { default: "GameXpress", template: "%s · GameXpress" },
+  description:
+    "GameXpress provides digital Gift Cards and supported Game Top-Ups with clear BDT catalog pricing.",
 };
 
 export default function RootLayout({

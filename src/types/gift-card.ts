@@ -80,7 +80,64 @@ export interface GiftCardPurchaseResult {
   totalBdt: DecimalString;
   status: OrderStatus;
   paymentStatus: PaymentStatus;
+  orderId: string;
+  paymentId: string;
+  transactionId: string;
+  paymentUrl: string;
+  paymentExpiresAt: string;
 }
+
+export interface BuyNowCheckoutInput {
+  productId: string;
+}
+
+export interface CheckoutResponse {
+  orderId: string;
+  paymentId: string;
+  transactionId: string;
+  paymentUrl: string;
+  paymentExpiresAt: string;
+}
+
+export type GiftCardDeliveryVerificationStatus =
+  | "PENDING"
+  | "PROCESSING"
+  | "COMPLETED";
+
+export interface VerifiedGiftCardCode {
+  code: string;
+  pin: string | null;
+  expiryDate: string | null;
+  emailStatus: DeliveryStatus | null;
+}
+
+export interface VerifiedGiftCardProduct {
+  name: string;
+  brand: string;
+  value: DecimalString | null;
+  currency: string;
+  delivery: VerifiedGiftCardCode[];
+}
+
+export interface PendingGiftCardOrderDelivery {
+  status: "PENDING" | "PROCESSING";
+  orderId: string;
+}
+
+export interface CompletedGiftCardOrderDelivery {
+  status: "COMPLETED";
+  orderId: string;
+  orderNumber: string;
+  products: VerifiedGiftCardProduct[];
+  payment: {
+    provider: "AAMARPAY";
+    trxId: string;
+  };
+}
+
+export type GiftCardOrderDelivery =
+  | PendingGiftCardOrderDelivery
+  | CompletedGiftCardOrderDelivery;
 
 export interface GiftCardCartProduct {
   id: string;
@@ -125,6 +182,7 @@ export interface GiftCardOrderItem {
   faceValue: DecimalString;
   currency: string;
   quantity: number;
+  priceBdt?: DecimalString;
   deliveryStatus: DeliveryStatus;
   imageUrl?: string | null;
   deliveries?: GiftCardDelivery[];

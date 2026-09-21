@@ -32,6 +32,7 @@ export const giftCardKeys = {
   orders: () => ["gift-cards", "orders"] as const,
   orderList: (filters?: object) => ["gift-cards", "orders", "list", filters ?? {}] as const,
   orderDetail: (id: string) => ["gift-cards", "sensitive", "order", id] as const,
+  orderDelivery: (id: string) => ["gift-cards", "sensitive", "delivery", id] as const,
   admin: () => ["gift-cards", "admin"] as const,
   adminLists: () => ["gift-cards", "admin", "products"] as const,
   adminList: (filters?: object) => ["gift-cards", "admin", "products", filters ?? {}] as const,

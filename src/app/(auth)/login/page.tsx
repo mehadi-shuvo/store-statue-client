@@ -1,16 +1,29 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { loginCustomer } from "@/lib/auth";
 import { useToast } from "@/context/ToastContext";
+import { getSafeReturnPath, withReturnTo } from "@/lib/safe-return-path";
+import { loginErrorMessage, rememberPendingVerificationEmail } from "@/lib/auth-flow";
 
 const LoginPage = () => {
+  return (
+    <Suspense fallback={<AuthPageFallback label="Preparing sign in…" />}>
+      <LoginContent />
+    </Suspense>
+  );
+};
+
+function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login: setAuthUser } = useAuth();
   const toast = useToast();
+  const returnTo = getSafeReturnPath(searchParams.get("returnTo"));
+  const signupHref = withReturnTo("/signup", returnTo);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -36,11 +49,18 @@ const LoginPage = () => {
       const user = await loginCustomer(formData);
 
       setAuthUser(user);
+      if (user.role === "CUSTOMER" && !user.isEmailVerified) {
+        rememberPendingVerificationEmail(user.email);
+        toast.warning("Verify your email", "Enter the code from your email or request a new one.");
+        router.replace(withReturnTo("/verify-email?source=login", returnTo));
+        router.refresh();
+        return;
+      }
       toast.success("Welcome back", "You are now signed in.");
-      router.replace("/");
+      router.replace(returnTo);
       router.refresh();
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Login failed";
+      const message = loginErrorMessage(err);
       setError(message);
       toast.error("Login failed", message);
     } finally {
@@ -138,7 +158,7 @@ const LoginPage = () => {
                   Forgot password?
                 </Link>
                 <Link
-                  href="/signup"
+                  href={signupHref}
                   className="text-sm font-medium text-slate-500 hover:text-slate-900"
                 >
                   Create account
@@ -154,7 +174,7 @@ const LoginPage = () => {
                   {loading ? "Logging in..." : "Login"}
                 </button>
                 <Link
-                  href="/signup"
+                  href={signupHref}
                   className="inline-flex w-full items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 sm:w-auto sm:flex-1"
                 >
                   Sign up
@@ -166,6 +186,14 @@ const LoginPage = () => {
       </div>
     </main>
   );
-};
+}
+
+function AuthPageFallback({ label }: { label: string }) {
+  return (
+    <main className="grid min-h-screen place-items-center bg-slate-50 pt-20">
+      <p role="status" className="text-sm font-semibold text-slate-600">{label}</p>
+    </main>
+  );
+}
 
 export default LoginPage;

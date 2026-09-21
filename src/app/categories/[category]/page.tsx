@@ -27,17 +27,13 @@ export default function CategoryPage() {
           ? apiUrl(`/api/products?categories=${encodeURIComponent(categoryID)}`)
           : apiUrl("/api/products");
 
-        console.log("Fetching from:", url); // Debug log
-
-        const res = await fetch(url);
+        const res = await fetch(url, { credentials: "include" });
 
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
 
         const json = await res.json();
-        console.log("API Response:", json); // Debug log to see actual structure
-
         // Handle different possible API response structures
         let productsData = [];
 
@@ -57,17 +53,12 @@ export default function CategoryPage() {
 
         // Ensure productsData is an array
         if (!Array.isArray(productsData)) {
-          console.error("Products data is not an array:", productsData);
           productsData = [];
         }
 
         setProducts(productsData);
-        console.log("Products set:", productsData.length); // Debug log
-      } catch (err) {
-        console.error("Error fetching products:", err);
-        setError(
-          err instanceof Error ? err.message : "Failed to load products",
-        );
+      } catch {
+        setError("We couldn't load products right now. Please try again.");
         setProducts([]);
       } finally {
         setLoading(false);
@@ -76,11 +67,6 @@ export default function CategoryPage() {
 
     fetchProducts();
   }, [categoryID]);
-
-  // Debug: Log products when they change
-  useEffect(() => {
-    console.log("Current products state:", products);
-  }, [products]);
 
   return (
     <div className="w-4/5 max-w-7xl mx-auto py-10">

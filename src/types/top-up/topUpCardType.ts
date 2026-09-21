@@ -5,7 +5,7 @@ type TopUpAmount = {
 };
 
 export type TTopUpData = {
-  id: number;
+  id: number | string;
   name: string;
   subHeading: string;
   title: string;
@@ -14,4 +14,5 @@ export type TTopUpData = {
   banner: string;
   gameCurrencyName: string;
   topUpAmounts: TopUpAmount[];
+  priceCurrency?: "USD" | "BDT";
 };

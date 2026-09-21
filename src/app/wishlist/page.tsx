@@ -42,7 +42,7 @@ export default function WishlistPage() {
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(236,72,153,0.12),_transparent_28%),linear-gradient(180deg,_#fff7fb_0%,_#f8fafc_100%)]">
-      <section className="pt-[148px] pb-10">
+      <section className="pt-20 pb-10">
         <div className="w-11/12 lg:w-4/5 mx-auto">
           <div className="overflow-hidden rounded-[2rem] border border-rose-100 bg-slate-950 text-white shadow-2xl">
             <div className="grid gap-0 lg:grid-cols-[1.2fr_0.8fr]">

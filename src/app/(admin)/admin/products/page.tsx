@@ -44,7 +44,20 @@ function changedFields(product: AdminProduct, payload: AdminProductPayload) {
   ) as Partial<AdminProductPayload>;
 }
 
-export default function AdminProductsPage() {
+function getStartingPrice(product: AdminProduct) {
+  const options = product.productType === "GIFT_CARD"
+    ? product.denominations
+    : product.productType === "GAME_TOP_UP"
+      ? product.packages
+      : product.plans;
+  const prices = options
+    .map((option) => Number(option.sellingPriceBDT))
+    .filter((price) => Number.isFinite(price));
+
+  return prices.length ? formatCurrency(Math.min(...prices)) : "—";
+}
+
+export function AdminProductsCatalog({ lockedType }: { lockedType?: ProductResourceType } = {}) {
   const toast = useToast();
   const [products, setProducts] = useState<AdminProduct[]>([]);
   const [categories, setCategories] = useState<AdminCategory[]>([]);
@@ -69,7 +82,7 @@ export default function AdminProductsPage() {
           page,
           limit: pageSize,
           search: search.trim() || undefined,
-          type: type || undefined,
+          type: lockedType || type || undefined,
           status: status || undefined,
         }),
         getCategories(),
@@ -82,7 +95,7 @@ export default function AdminProductsPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, status, type]);
+  }, [lockedType, page, search, status, type]);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(loadProducts, 250);
@@ -98,7 +111,7 @@ export default function AdminProductsPage() {
 
   const openCreate = () => {
     setEditingProduct(null);
-    setFormType(type || "GIFT_CARD");
+    setFormType(lockedType || type || "GIFT_CARD");
     setFormOpen(true);
   };
 
@@ -162,8 +175,8 @@ export default function AdminProductsPage() {
     <AdminShell>
       <PageHeader
         eyebrow="Catalog"
-        title="Products"
-        description="Manage gift cards, game top-ups, and subscriptions through their specialized APIs."
+        title={lockedType === "SUBSCRIPTION" ? "Subscriptions" : "Products"}
+        description={lockedType === "SUBSCRIPTION" ? "Manage subscription products, plans, availability, and customer pricing." : "A high-level catalog overview across every digital product type."}
         action={
           <button
             type="button"
@@ -193,10 +206,10 @@ export default function AdminProductsPage() {
 
       <div className="mb-5 flex flex-wrap gap-3 rounded-[1.5rem] border border-slate-200 bg-white p-4">
         <SearchInput value={search} onChange={(value) => { setSearch(value); setPage(1); }} placeholder="Search products..." />
-        <select value={type} onChange={(event) => { setType(event.target.value as ProductResourceType | ""); setPage(1); }} className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm">
+        {!lockedType ? <select value={type} onChange={(event) => { setType(event.target.value as ProductResourceType | ""); setPage(1); }} className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm">
           <option value="">All types</option>
           {productTypes.map((item) => <option key={item} value={item}>{item}</option>)}
-        </select>
+        </select> : null}
         <select value={status} onChange={(event) => { setStatus(event.target.value as ProductStatus | ""); setPage(1); }} className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm">
           <option value="">All statuses</option>
           {statuses.map(item => <option key={item}>{item}</option>)}
@@ -231,7 +244,7 @@ export default function AdminProductsPage() {
                       </td>
                       <td className="px-4 py-3"><StatusBadge value={product.productType} /></td>
                       <td className="px-4 py-3 text-slate-600">{product.category?.title || product.category?.name || "Unassigned"}</td>
-                      <td className="px-4 py-3 font-semibold">{formatCurrency(Math.min(...(product.productType === "GIFT_CARD" ? product.denominations : product.productType === "GAME_TOP_UP" ? product.packages : product.plans).map(option => Number(option.sellingPriceBDT))))}</td>
+                      <td className="px-4 py-3 font-semibold">{getStartingPrice(product)}</td>
                       <td className="px-4 py-3">{(product.productType === "GIFT_CARD" ? product.denominations : product.productType === "GAME_TOP_UP" ? product.packages : product.plans).length} options</td>
                       <td className="px-4 py-3"><StatusBadge value={product.status} /></td>
                       <td className="px-4 py-3">
@@ -284,3 +297,5 @@ export default function AdminProductsPage() {
     </AdminShell>
   );
 }
+
+export default function AdminProductsPage() { return <AdminProductsCatalog />; }

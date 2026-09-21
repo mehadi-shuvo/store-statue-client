@@ -7,7 +7,7 @@ import {
   updateCustomerProfile,
   type AuthUser,
 } from "@/lib/auth";
-import { Loader2, Save, ShieldAlert, Trash2, UserRound } from "lucide-react";
+import { BadgeCheck, Loader2, MailWarning, Save, ShieldAlert, Trash2, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
@@ -124,7 +124,7 @@ export default function ProfilePage() {
 
   if (loading || profileLoading) {
     return (
-      <main className="min-h-screen bg-slate-50 pt-[148px]">
+      <main className="min-h-screen bg-slate-50 pt-20">
         <div className="mx-auto flex min-h-[50vh] w-11/12 items-center justify-center lg:w-4/5">
           <div className="flex items-center gap-3 text-slate-600">
             <Loader2 className="h-5 w-5 animate-spin" />
@@ -140,7 +140,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)] pt-[148px] pb-16">
+    <main className="min-h-screen bg-[linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)] pt-20 pb-16">
       <div className="mx-auto w-11/12 lg:w-4/5">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -156,6 +156,7 @@ export default function ProfilePage() {
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href="/profile/gift-card-orders" className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Gift card orders</Link>
+            <Link href="/profile/game-topup-orders" className="rounded-2xl bg-indigo-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-800">Top-up orders</Link>
             <Link href="/cart" className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">View cart</Link>
           </div>
         </div>
@@ -182,6 +183,14 @@ export default function ProfilePage() {
                 <p className="mt-1 font-semibold text-slate-900">
                   {user.phone || "Not added"}
                 </p>
+              </div>
+              <div className={`rounded-2xl px-4 py-3 ${user.isEmailVerified ? "bg-emerald-50" : "bg-amber-50"}`}>
+                <p className={user.isEmailVerified ? "text-emerald-700" : "text-amber-700"}>Email status</p>
+                <p className={`mt-1 flex items-center gap-2 font-semibold ${user.isEmailVerified ? "text-emerald-900" : "text-amber-950"}`}>
+                  {user.isEmailVerified ? <BadgeCheck className="h-4 w-4" aria-hidden="true" /> : <MailWarning className="h-4 w-4" aria-hidden="true" />}
+                  {user.isEmailVerified ? "Verified" : "Verification required"}
+                </p>
+                {!user.isEmailVerified ? <Link href="/verify-email?returnTo=%2Fprofile" className="mt-2 inline-block text-xs font-black text-amber-900 underline underline-offset-4">Verify or resend email</Link> : null}
               </div>
               <div className="rounded-2xl bg-slate-50 px-4 py-3">
                 <p className="text-slate-500">Role</p>

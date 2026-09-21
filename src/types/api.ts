@@ -8,10 +8,10 @@ export type GiftCardDeliveryType = "CODE" | "LINK" | "MANUAL" | "ACCOUNT_RECHARG
 export type GameTopUpFulfillmentType = "PLAYER_ID" | "PLAYER_ID_AND_SERVER" | "EMAIL" | "PHONE" | "LOGIN_CREDENTIALS" | "REDEEM_CODE" | "MANUAL";
 export type SubscriptionDeliveryType = "ACCOUNT_CREDENTIALS" | "CUSTOMER_ACCOUNT_ACTIVATION" | "FAMILY_INVITATION" | "REDEEM_CODE" | "LICENSE_KEY" | "MANUAL";
 export type SubscriptionBillingCycle = "DAILY" | "WEEKLY" | "MONTHLY" | "QUARTERLY" | "HALF_YEARLY" | "YEARLY" | "LIFETIME" | "CUSTOM";
-export type OrderStatus = "PENDING" | "CONFIRMED" | "PROCESSING" | "COMPLETED" | "CANCELLED" | "REFUNDED" | "PARTIALLY_REFUNDED";
-export type PaymentStatus = "PENDING" | "INITIATED" | "PROCESSING" | "PAID" | "FAILED" | "CANCELLED" | "REFUNDED" | "PARTIALLY_REFUNDED";
-export type DeliveryStatus = "PENDING" | "PROCESSING" | "DELIVERED" | "FAILED" | "CANCELLED" | "REFUNDED";
-export type PaymentMethod = "BKASH" | "NAGAD" | "ROCKET" | "CARD" | "BANK_TRANSFER" | "CASH" | "MANUAL";
+export type OrderStatus = "PENDING" | "CONFIRMED" | "PROCESSING" | "COMPLETED" | "CANCELLED" | "MANUAL_REVIEW" | "REFUND_PENDING" | "REFUNDED" | "PARTIALLY_REFUNDED";
+export type PaymentStatus = "CREATED" | "PENDING" | "INITIATED" | "PROCESSING" | "PAID" | "FAILED" | "CANCELLED" | "EXPIRED" | "UNKNOWN" | "REFUND_PENDING" | "REFUNDED" | "REFUND_FAILED" | "PARTIALLY_REFUNDED";
+export type DeliveryStatus = "PENDING" | "QUEUED" | "PROCESSING" | "PROVIDER_PENDING" | "DELIVERED" | "FAILED" | "FAILED_RETRYABLE" | "FAILED_FINAL" | "MANUAL_REVIEW" | "CANCELLED" | "REFUNDED";
+export type PaymentMethod = "AAMARPAY" | "NAGAD" | "ROCKET" | "CARD" | "BANK_TRANSFER" | "CASH" | "MANUAL";
 export type LogLevel = "trace" | "debug" | "info" | "warn" | "error" | "fatal";
 
 export type Money = number | string;
@@ -33,6 +33,7 @@ export interface ApiFailure {
   success: false;
   statusCode: number;
   message: string;
+  code?: string;
   details?: ApiFieldError[];
 }
 
@@ -61,6 +62,10 @@ export interface User {
   createdAt?: string;
   updatedAt?: string;
   deletedAt?: string | null;
+}
+
+export interface RegisteredUser extends User {
+  verificationEmailSent: boolean;
 }
 
 export interface Category {
@@ -327,15 +332,15 @@ export interface Payment {
   providerResponse?: JsonValue | null;
   rawResponse?: JsonValue | null;
   failureReason: string | null;
+  reconciliationReason?: string | null;
+  attempts?: Array<{ id: string; gateway: string; merchantTransactionId: string; gatewayTransactionId?: string | null; status: string; initiatedAt: string; verifiedAt?: string | null; failureReason?: string | null }>;
   paidAt: string | null;
   order?: Order;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface CreatePaymentResult { paymentId: string; paymentUrl: string | null }
-export interface ExecutePaymentResult { transactionId: string | null; status: PaymentStatus }
-export type MockPaymentScenario = "success" | "failure" | "cancel";
+export interface CreatePaymentResult { orderId: string; paymentId: string; transactionId: string; paymentUrl: string; paymentExpiresAt?: string }
 
 export interface ManagedUser extends User {
   _count?: { orders: number; reviews: number; addresses: number };

@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { ApiLoading } from "@/components/ApiState";
 import type { UserRole } from "@/types/api";
 import { ShieldX } from "lucide-react";
+import { getSafeReturnPath } from "@/lib/safe-return-path";
 
 export function RouteGuard({ children, roles }: { children: ReactNode; roles?: UserRole[] }) {
   const { user, loading } = useAuth();
@@ -15,7 +16,12 @@ export function RouteGuard({ children, roles }: { children: ReactNode; roles?: U
   useEffect(() => {
     if (!loading && !user) {
       const login = pathname.startsWith("/admin") ? "/admin/login" : "/login";
-      router.replace(`${login}?next=${encodeURIComponent(pathname)}`);
+      const parameter = pathname.startsWith("/admin") ? "next" : "returnTo";
+      const returnPath = getSafeReturnPath(
+        `${pathname}${window.location.search}${window.location.hash}`,
+        pathname,
+      );
+      router.replace(`${login}?${parameter}=${encodeURIComponent(returnPath)}`);
     }
   }, [loading, pathname, router, user]);
 

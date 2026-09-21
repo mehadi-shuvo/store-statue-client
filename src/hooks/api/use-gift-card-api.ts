@@ -38,6 +38,19 @@ export function useInstantGiftCardBuy() {
   });
 }
 
+export function useBuyNowCheckout() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ productId, idempotencyKey }: { productId: string; idempotencyKey: string }) =>
+      giftCardService.createBuyNowCheckout(productId, idempotencyKey),
+    onSuccess: async () => Promise.all([
+      client.invalidateQueries({ queryKey: giftCardKeys.lists() }),
+      client.invalidateQueries({ queryKey: giftCardKeys.details() }),
+      client.invalidateQueries({ queryKey: giftCardKeys.orders() }),
+    ]),
+  });
+}
+
 export function useGiftCardCart(enabled = true) {
   return useQuery({ queryKey: giftCardKeys.cart(), queryFn: giftCardService.cart, enabled, retry: false });
 }
@@ -73,7 +86,8 @@ export function useClearGiftCardCart() {
 export function useGiftCardCheckout() {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: (input: DeliveryEmailInput) => giftCardService.checkout(input),
+    mutationFn: ({ delivery, idempotencyKey }: { delivery: DeliveryEmailInput; idempotencyKey: string }) =>
+      giftCardService.checkout(delivery, idempotencyKey),
     onSuccess: async () => Promise.all([
       client.invalidateQueries({ queryKey: giftCardKeys.cart() }),
       client.invalidateQueries({ queryKey: giftCardKeys.lists() }),
@@ -90,6 +104,15 @@ export function useGiftCardOrders(filters?: Pick<GiftCardOrderFilters, "page" | 
 
 export function useGiftCardOrder(id: string) {
   return useQuery({ queryKey: giftCardKeys.orderDetail(id), queryFn: () => giftCardService.order(id), enabled: Boolean(id), ...sensitiveQueryOptions });
+}
+
+export function useGiftCardOrderDelivery(id: string) {
+  return useQuery({
+    queryKey: giftCardKeys.orderDelivery(id),
+    queryFn: () => giftCardService.getOrderDelivery(id),
+    enabled: Boolean(id),
+    ...sensitiveQueryOptions,
+  });
 }
 
 export function useAdminGiftCards(filters?: GiftCardCatalogFilters & { isActive?: boolean }) {

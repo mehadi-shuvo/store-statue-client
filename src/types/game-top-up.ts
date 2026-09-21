@@ -1,0 +1,32 @@
+import type { PaginationMeta, PaymentStatus, ProductInputType, ProductStatus } from "@/types/api";
+
+export type TopUpStatus = "PENDING" | "QUEUED" | "PROCESSING" | "PROVIDER_PENDING" | "COMPLETED" | "CANCELLED" | "FAILED" | "FAILED_RETRYABLE" | "FAILED_FINAL" | "MANUAL_REVIEW";
+export type FulfillmentStatus = "PENDING" | "QUEUED" | "PROCESSING" | "PROVIDER_PENDING" | "SUCCESS" | "FAILED" | "FAILED_RETRYABLE" | "FAILED_FINAL" | "MANUAL_REVIEW" | "CANCELLED";
+export type TopUpFulfillmentType = "PLAYER_ID" | "PLAYER_ID_AND_SERVER" | "ACCOUNT_IDENTIFIER" | "EMAIL" | "PHONE" | "ACCOUNT_ACCESS_REQUIRED" | "REDEEM_CODE" | "MANUAL";
+export type FailureReason = "INVALID_PLAYER_ID" | "ACCOUNT_NOT_FOUND" | "REGION_MISMATCH" | "OTHER";
+export type AccountFieldOption = { label: string; value: string };
+export type AccountFieldRules = { minLength?: number; maxLength?: number; pattern?: string; patternMessage?: string };
+
+export interface GameTopUpPackage { id: string; gameId: string; name: string; coinAmount: number; bonusAmount: number; priceBdt: string; costPriceBdt?: string | null; isActive: boolean; isPopular: boolean; sortOrder: number; stockQuantity: number | null; createdAt?: string; updatedAt?: string }
+export interface GameAccountField { id: string; gameId: string; key: string; label: string; type: ProductInputType; placeholder?: string | null; helpText?: string | null; required: boolean; options: AccountFieldOption[]; validationRules: AccountFieldRules; isActive: boolean; sortOrder: number; createdAt?: string; updatedAt?: string }
+export interface GameTopUp { id: string; name: string; title: string; slug: string; description?: string | null; subHeading?: string | null; logoUrl: string; bannerUrl?: string | null; gameCurrencyName: string; fulfillmentType: TopUpFulfillmentType; instructions?: string | null; estimatedDelivery?: string | null; termsAndConditions?: string | null; status: ProductStatus; isActive: boolean; isFeatured: boolean; sortOrder: number; packages: GameTopUpPackage[]; accountFields: GameAccountField[]; createdAt?: string; updatedAt?: string }
+export interface GamePage { data: GameTopUp[]; meta: PaginationMeta }
+
+export interface GameInput { name: string; title?: string; slug: string; description?: string; subHeading?: string; logoUrl: string; bannerUrl?: string; gameCurrencyName: string; fulfillmentType: TopUpFulfillmentType; instructions?: string; estimatedDelivery?: string; termsAndConditions?: string; isActive: boolean; isFeatured: boolean; sortOrder: number }
+export interface PackageInput { name: string; coinAmount: number; bonusAmount?: number; priceBdt: string; costPriceBdt?: string; isActive: boolean; isPopular: boolean; sortOrder: number; stockQuantity?: number | null }
+export interface AccountFieldInput { key: string; label: string; type: ProductInputType; placeholder?: string; helpText?: string; required: boolean; options?: AccountFieldOption[]; validationRules?: AccountFieldRules; isActive: boolean; sortOrder: number }
+
+export interface CreateTopUpOrderResult { orderId: string; orderNumber: string; status: "PAYMENT_PENDING"; paymentStatus: PaymentStatus; fulfillmentStatus: "PENDING"; dailySerial: null; queueDate: null; totalBdt: string }
+export interface CustomerTopUpItem { id: string; game: string; package: string; imageUrl?: string | null; priceBdt: string; status: TopUpStatus; fulfillmentStatus?: FulfillmentStatus; accountDetails: Record<string, string>; queueDate: string | null; dailySerial: number | null; coinAmount: number | null; bonusAmount: number | null; coinLabel: string | null; submittedAt?: string; cancellableUntil?: string | null; processingStartedAt?: string | null; previousBalance?: string | null; currentBalance?: string | null; customerMessage?: string | null; completedAt?: string | null; cancelledAt?: string | null; failedAt?: string | null; failureReason?: string | null }
+export interface CustomerTopUpOrder { id: string; orderNumber: string; totalBdt: string; amount?: string; currency?: string; paymentStatus: PaymentStatus; fulfillmentStatus?: FulfillmentStatus; transactionId?: string | null; game?: { id: string | null; title: string; slug: string | null }; package?: { id: string | null; title: string }; accountDetails?: Record<string, string>; createdAt: string; updatedAt?: string; items: CustomerTopUpItem[] }
+export interface CustomerTopUpOrderPage { data: CustomerTopUpOrder[]; meta: PaginationMeta }
+
+export interface AdminTopUpQueueItem { id: string; productTitle: string; optionTitle: string; status: TopUpStatus; createdAt: string; gameTopUpProductId: string; accountDetails: Record<string, string>; gameTopUpOrderDetail: { queueDate: string | null; dailySerial: number | null; cancellableUntil?: string | null; processingStartedAt?: string | null; gameCurrencyAmountSnapshot: number; bonusCurrencyAmountSnapshot: number; gameCurrencyLabelSnapshot: string } | null; order: { id: string; orderNumber: string; paymentStatus: PaymentStatus; user: { id: string; name: string; email: string } } }
+export interface AdminTopUpQueuePage { data: AdminTopUpQueueItem[]; meta: PaginationMeta }
+export interface AdminTopUpOrderItem extends AdminTopUpQueueItem { customerInputs?: Record<string, unknown>; deliveryStatus: string; unitPrice?: string; failureReason?: string | null; gameTopUpOrderDetail: AdminTopUpQueueItem["gameTopUpOrderDetail"] & { previousBalance?: string | null; currentBalance?: string | null; customerMessage?: string | null; internalAdminNote?: string | null; completedAt?: string | null; failedAt?: string | null; processedByAdmin?: { id: string; name: string } | null; completedByAdmin?: { id: string; name: string } | null } }
+export interface AdminTopUpOrder { id: string; orderNumber: string; totalCost: string; paymentStatus: PaymentStatus; status: string; createdAt: string; user: { id: string; name: string; email: string; phone?: string | null }; items: AdminTopUpOrderItem[] }
+
+export interface OrderFilters { page?: number; limit?: number; status?: TopUpStatus; paymentStatus?: PaymentStatus }
+export interface AdminOrderFilters extends OrderFilters { gameId?: string; userId?: string; serial?: number; date?: string }
+export interface CompleteTopUpInput { previousBalance: string; currentBalance: string; customerMessage?: string; internalAdminNote?: string }
+export interface FailTopUpInput { reason: FailureReason; customerMessage: string; internalAdminNote?: string }

@@ -12,6 +12,7 @@ import { UNAUTHORIZED_EVENT } from "@/lib/api";
 import { usePathname, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { sensitiveGiftCardKey } from "@/hooks/api/query-keys";
+import { getSafeReturnPath, withReturnTo } from "@/lib/safe-return-path";
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -63,13 +64,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const clearAuth = useCallback(() => {
     setUser(null);
     queryClient.removeQueries({ queryKey: sensitiveGiftCardKey });
+    queryClient.removeQueries({ queryKey: ["payment-return"] });
+    queryClient.removeQueries({ queryKey: ["game-topups", "customer"] });
   }, [queryClient]);
 
   useEffect(() => {
     const handleUnauthorized = () => {
       clearAuth();
-      const loginPath = pathname.startsWith("/admin") ? "/admin/login" : "/login";
-      router.replace(`${loginPath}?reason=session-expired`);
+      if (pathname.startsWith("/admin")) {
+        router.replace("/admin/login?reason=session-expired");
+        return;
+      }
+      const currentPath = getSafeReturnPath(
+        `${window.location.pathname}${window.location.search}${window.location.hash}`,
+      );
+      router.replace(withReturnTo("/login?reason=session-expired", currentPath));
     };
     window.addEventListener(UNAUTHORIZED_EVENT, handleUnauthorized);
     return () => window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorized);

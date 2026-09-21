@@ -54,6 +54,12 @@ export function validateResetPassword(input: { email: string; otp: string; newPa
   return result(errors);
 }
 
+export function validateEmailVerification(input: { email: string; otp: string }): ValidationResult {
+  const errors = validateEmail(input.email);
+  if (!/^\d{6}$/.test(input.otp.trim())) errors.push({ field: "otp", message: "Enter the 6-digit verification code" });
+  return result(errors);
+}
+
 export function validateProfile(input: { name?: string; phone?: string | null }): ValidationResult {
   const errors = validatePhone(input.phone);
   if (input.name !== undefined) {
@@ -79,13 +85,10 @@ export function validateReview(input: { rating?: number; comment?: string }, cre
   return result(errors);
 }
 
-export function validateCreatePayment(input: { orderId: string; amount: number }): ValidationResult {
+export function validateCreatePayment(input: { orderId: string }): ValidationResult {
   const errors: ApiFieldError[] = [];
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(input.orderId)) {
     errors.push({ field: "orderId", message: "Invalid order id" });
-  }
-  if (!Number.isFinite(input.amount) || input.amount <= 0) {
-    errors.push({ field: "amount", message: "Amount must be greater than 0" });
   }
   return result(errors);
 }

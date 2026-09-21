@@ -1,10 +1,9 @@
 # Backend gaps affecting the client
 
-Verified against `/home/shuvo/Projects/Ontor/server` on 2026-08-12.
+Verified against `/home/shuvo/Projects/Ontor/server` on 2026-09-14.
 
-- There is no authenticated customer order-creation or checkout endpoint. `POST /payments/create` requires an existing customer-owned order ID and an amount exactly matching that order, so the client does not fabricate checkout or derive an order from the cart.
-- There is no customer order-list or payment-history endpoint. The customer payment API supports only create, execute, and status-by-provider-payment-ID.
-- The mock bKash provider returns `http://localhost:5000/mock/bkash/pay/:paymentId`, but the Express app does not register that route. A locally created mock payment therefore has no browser payment page/redirect flow.
+- Gift-card Buy Now and cart checkout create an order and return a backend-created aamarPay payment URL. Generic payment initiation requires only an existing customer-owned `orderId`.
+- There is no generic customer payment-history endpoint. Gift-card and game top-up order history are available through their dedicated customer routes.
 - Generic multipart upload writes the uploaded primary image to `thumbnail`, but `game-top-up.service.ts` does not map `thumbnail` to `logo`. New game top-ups therefore need a hosted `logo` URL until the backend mapping is added.
 - Direct gift-card, top-up, and subscription mutation routes do not install multipart middleware. They accept JSON and image URLs; file uploads must use the generic `/products` route.
 - Category mutations do not accept or upload an image/icon, even though the Prisma category model has an `image` column.

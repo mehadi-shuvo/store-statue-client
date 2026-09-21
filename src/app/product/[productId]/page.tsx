@@ -58,7 +58,6 @@ interface ProductDetailsPayload {
 
 const ProductDetailsPage = () => {
   const { productId } = useParams();
-  // console.log({ productId });
 
   const [productData, setProductData] = useState<ProductResponse | null>(null);
   const [loading, setLoading] = useState(true);

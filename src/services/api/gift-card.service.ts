@@ -1,5 +1,8 @@
 import { apiData, apiRequest, queryString } from "@/lib/api";
+import { validatePaymentUrl } from "@/lib/payment-url";
 import type {
+  CheckoutResponse,
+  CompletedGiftCardOrderDelivery,
   DeliveryEmailInput,
   GiftCardCatalogFilters,
   GiftCardCodeFilters,
@@ -13,7 +16,10 @@ import type {
   GiftCardProductInput,
   GiftCardPurchaseResult,
   GiftCardCart,
+  GiftCardOrderDelivery,
   InstantBuyInput,
+  VerifiedGiftCardCode,
+  VerifiedGiftCardProduct,
 } from "@/types/gift-card";
 import {
   mapGiftCardCode,
@@ -24,6 +30,136 @@ import {
   mapGiftCardProduct,
 } from "@/services/api/gift-card.mapper";
 
+function record(value: unknown, label: string): Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error(`The server returned an invalid ${label} response.`);
+  }
+  return value as Record<string, unknown>;
+}
+
+function requiredString(
+  value: unknown,
+  field: string,
+  label: string,
+): string {
+  if (typeof value !== "string" || !value.trim()) {
+    throw new Error(`The server returned an invalid ${label} response (${field}).`);
+  }
+  return value;
+}
+
+function optionalString(value: unknown): string | null {
+  return typeof value === "string" && value.trim() ? value : null;
+}
+
+function requiredIsoTimestamp(value: unknown, field: string): string {
+  const timestamp = requiredString(value, field, "checkout");
+  if (Number.isNaN(Date.parse(timestamp))) throw new Error(`The server returned an invalid checkout response (${field}).`);
+  return timestamp;
+}
+
+export function parseCheckoutResponse(value: unknown): CheckoutResponse {
+  const data = record(value, "checkout");
+  return {
+    orderId: requiredString(data.orderId, "orderId", "checkout"),
+    paymentId: requiredString(data.paymentId, "paymentId", "checkout"),
+    transactionId: requiredString(data.transactionId, "transactionId", "checkout"),
+    paymentUrl: validatePaymentUrl(data.paymentUrl),
+    paymentExpiresAt: requiredIsoTimestamp(data.paymentExpiresAt, "paymentExpiresAt"),
+  };
+}
+
+const deliveryStatuses = new Set([
+  "PENDING",
+  "QUEUED",
+  "PROCESSING",
+  "PROVIDER_PENDING",
+  "DELIVERED",
+  "FAILED",
+  "FAILED_RETRYABLE",
+  "FAILED_FINAL",
+  "MANUAL_REVIEW",
+  "CANCELLED",
+  "REFUNDED",
+]);
+
+function parseDeliveredCode(value: unknown): VerifiedGiftCardCode {
+  const data = record(value, "gift-card delivery");
+  const emailStatus =
+    typeof data.emailStatus === "string" && deliveryStatuses.has(data.emailStatus)
+      ? (data.emailStatus as VerifiedGiftCardCode["emailStatus"])
+      : null;
+  return {
+    code: requiredString(data.code, "code", "gift-card delivery"),
+    pin: optionalString(data.pin),
+    expiryDate: optionalString(data.expiryDate),
+    emailStatus,
+  };
+}
+
+function parseDeliveredProduct(value: unknown): VerifiedGiftCardProduct {
+  const data = record(value, "gift-card product delivery");
+  if (!Array.isArray(data.delivery) || data.delivery.length === 0) {
+    throw new Error("The server returned gift-card delivery without a code.");
+  }
+  const cardValue = data.value;
+  if (cardValue !== null && typeof cardValue !== "string") {
+    throw new Error("The server returned an invalid gift-card value.");
+  }
+  return {
+    name: requiredString(data.name, "name", "gift-card product delivery"),
+    brand: requiredString(data.brand, "brand", "gift-card product delivery"),
+    value: cardValue,
+    currency: requiredString(data.currency, "currency", "gift-card product delivery"),
+    delivery: data.delivery.map(parseDeliveredCode),
+  };
+}
+
+export function parseGiftCardOrderDelivery(
+  value: unknown,
+  expectedOrderId: string,
+): GiftCardOrderDelivery {
+  const data = record(value, "order delivery");
+  const orderId = requiredString(data.orderId, "orderId", "order delivery");
+  if (orderId !== expectedOrderId) {
+    throw new Error("The server returned delivery for a different order.");
+  }
+
+  if (data.status === "PENDING" || data.status === "PROCESSING") {
+    return { status: data.status, orderId };
+  }
+  if (!Array.isArray(data.products) || data.products.length === 0) {
+    throw new Error("The server returned an invalid order delivery response (products).");
+  }
+  const payment = record(data.payment, "order payment");
+  if (payment.provider !== "AAMARPAY") {
+    throw new Error("The server returned an unexpected payment provider.");
+  }
+
+  const completed: CompletedGiftCardOrderDelivery = {
+    status: "COMPLETED",
+    orderId,
+    orderNumber: requiredString(data.orderNumber, "orderNumber", "order delivery"),
+    products: data.products.map(parseDeliveredProduct),
+    payment: {
+      provider: "AAMARPAY",
+      trxId: requiredString(payment.trxId, "trxId", "order payment"),
+    },
+  };
+  return completed;
+}
+
+export function createCheckoutIdempotencyKey(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+    const bytes = crypto.getRandomValues(new Uint8Array(16));
+    return Array.from(bytes, byte => byte.toString(16).padStart(2, "0")).join("");
+  }
+  throw new Error("Secure checkout is unavailable in this browser.");
+}
+
 export const giftCardService = {
   catalog(filters?: GiftCardCatalogFilters) {
     return apiData<GiftCardPage>(`/gift-cards${queryString(filters)}`);
@@ -33,6 +169,13 @@ export const giftCardService = {
   },
   instantBuy(input: InstantBuyInput) {
     return apiData<GiftCardPurchaseResult>("/gift-cards/instant-buy", { method: "POST", body: input });
+  },
+  createBuyNowCheckout(productId: string, idempotencyKey = createCheckoutIdempotencyKey()) {
+    return apiData<unknown>("/checkout/buy-now", {
+      method: "POST",
+      headers: { "Idempotency-Key": idempotencyKey },
+      body: { productId },
+    }).then(parseCheckoutResponse);
   },
   cart() {
     return apiData<GiftCardCart>("/cart");
@@ -49,14 +192,22 @@ export const giftCardService = {
   async clearCart() {
     await apiRequest<never>("/cart", { method: "DELETE" });
   },
-  checkout(input: DeliveryEmailInput) {
-    return apiData<GiftCardPurchaseResult>("/cart/checkout", { method: "POST", body: input });
+  checkout(input: DeliveryEmailInput, idempotencyKey = createCheckoutIdempotencyKey()) {
+    return apiData<GiftCardPurchaseResult>("/cart/checkout", {
+      method: "POST",
+      headers: { "Idempotency-Key": idempotencyKey },
+      body: input,
+    }).then(data => ({ ...data, ...parseCheckoutResponse(data) }));
   },
   orders(filters?: Pick<GiftCardOrderFilters, "page" | "limit">) {
     return apiData<GiftCardOrderPage>(`/me/gift-card-orders${queryString(filters)}`);
   },
   order(orderId: string) {
     return apiData<GiftCardOrder>(`/me/gift-card-orders/${encodeURIComponent(orderId)}`);
+  },
+  getOrderDelivery(orderId: string) {
+    return apiData<unknown>(`/orders/${encodeURIComponent(orderId)}/delivery`)
+      .then(value => parseGiftCardOrderDelivery(value, orderId));
   },
 
   adminProducts(filters?: GiftCardCatalogFilters & { isActive?: boolean }) {

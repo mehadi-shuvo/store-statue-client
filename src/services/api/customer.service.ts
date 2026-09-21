@@ -1,4 +1,4 @@
-import { apiData, apiRequest, queryString } from "@/lib/api";
+import { apiData, apiRequest } from "@/lib/api";
 import type {
   AddCartItemInput,
   Cart,
@@ -6,9 +6,8 @@ import type {
   CartItemIdentity,
   CreatePaymentResult,
   DigitalProductType,
-  ExecutePaymentResult,
-  MockPaymentScenario,
   Payment,
+  RegisteredUser,
   Review,
   UpdateCartItemInput,
   User,
@@ -17,6 +16,9 @@ import type {
 export interface LoginInput { email: string; password: string }
 export interface RegisterInput { email: string; name: string; phone?: string; password: string }
 export interface ResetPasswordInput { email: string; otp: string; newPassword: string }
+export interface VerifyEmailInput { email: string; otp: string }
+export interface VerifyEmailResult { isEmailVerified: true }
+export interface ResendVerificationResult { cooldownSeconds: number }
 
 export const customerService = {
   async login(input: LoginInput) {
@@ -29,7 +31,23 @@ export const customerService = {
   },
 
   register(input: RegisterInput) {
-    return apiData<User>("/user/register", { method: "POST", body: input });
+    return apiData<RegisteredUser>("/user/register", { method: "POST", body: input });
+  },
+
+  verifyEmail(input: VerifyEmailInput) {
+    return apiData<VerifyEmailResult>("/user/verify-email", {
+      method: "POST",
+      body: input,
+      handleUnauthorized: false,
+    });
+  },
+
+  resendVerification(email: string) {
+    return apiData<ResendVerificationResult>("/user/resend-verification", {
+      method: "POST",
+      body: { email },
+      handleUnauthorized: false,
+    });
   },
 
   async logout() {
@@ -109,15 +127,8 @@ export const customerService = {
     await apiRequest<never>(`/review/${encodeURIComponent(reviewId)}`, { method: "DELETE" });
   },
 
-  createPayment(input: { orderId: string; amount: number }) {
-    return apiData<CreatePaymentResult>("/payments/create", { method: "POST", body: input });
-  },
-
-  executePayment(paymentId: string, scenario?: MockPaymentScenario) {
-    return apiData<ExecutePaymentResult>(
-      `/payments/execute${queryString({ scenario })}`,
-      { method: "POST", body: { paymentId } },
-    );
+  createPayment(input: { orderId: string }) {
+    return apiData<CreatePaymentResult>("/payments/aamarpay/initiate", { method: "POST", body: input });
   },
 
   paymentStatus(paymentId: string) {

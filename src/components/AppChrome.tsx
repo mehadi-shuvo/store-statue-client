@@ -3,6 +3,7 @@
 import Footer from "@/components/Footer";
 import NavbarNew from "@/components/NavbarNew";
 import { usePathname } from "next/navigation";
+import EmailVerificationBanner from "@/components/auth/EmailVerificationBanner";
 
 export default function AppChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -15,6 +16,7 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
   return (
     <>
       <NavbarNew />
+      <EmailVerificationBanner />
       {children}
       <Footer />
     </>

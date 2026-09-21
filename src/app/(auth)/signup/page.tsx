@@ -1,17 +1,28 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { registerCustomer } from "@/lib/auth";
 import { useToast } from "@/context/ToastContext";
-
-const strongPasswordPattern =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+import { getSafeReturnPath, withReturnTo } from "@/lib/safe-return-path";
+import { registrationErrorMessage, rememberPendingVerificationEmail } from "@/lib/auth-flow";
+import { validateRegistration } from "@/lib/validation";
 
 const SignupPage = () => {
+  return (
+    <Suspense fallback={<SignupFallback />}>
+      <SignupContent />
+    </Suspense>
+  );
+};
+
+function SignupContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const toast = useToast();
+  const returnTo = getSafeReturnPath(searchParams.get("returnTo"));
+  const loginHref = withReturnTo("/login", returnTo);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -43,9 +54,14 @@ const SignupPage = () => {
       return;
     }
 
-    if (!strongPasswordPattern.test(formData.password)) {
-      const message =
-        "Password must be 8+ characters with uppercase, lowercase, number, and special character.";
+    const validation = validateRegistration({
+      name: formData.name,
+      phone: formData.phone || undefined,
+      email: formData.email,
+      password: formData.password,
+    });
+    if (!validation.valid) {
+      const message = validation.errors[0].message;
       setError(message);
       toast.error("Signup failed", message);
       return;
@@ -54,17 +70,28 @@ const SignupPage = () => {
     setLoading(true);
 
     try {
-      await registerCustomer({
+      const registeredUser = await registerCustomer({
         name: formData.name.trim(),
         phone: formData.phone.trim() || undefined,
         email: formData.email.trim(),
         password: formData.password,
       });
 
-      toast.success("Account created", "Please login with your new account.");
-      router.replace("/login?registered=1");
+      rememberPendingVerificationEmail(registeredUser.email);
+      toast.success(
+        "Account created",
+        registeredUser.verificationEmailSent
+          ? "Enter the verification code from your email."
+          : "Request a new verification email to continue.",
+      );
+      router.replace(
+        withReturnTo(
+          `/verify-email?registered=1&delivery=${registeredUser.verificationEmailSent ? "sent" : "failed"}`,
+          returnTo,
+        ),
+      );
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Signup failed";
+      const message = registrationErrorMessage(err);
       setError(message);
       toast.error("Signup failed", message);
     } finally {
@@ -179,7 +206,7 @@ const SignupPage = () => {
                   {loading ? "Creating account..." : "Sign up"}
                 </button>
                 <Link
-                  href="/login"
+                  href={loginHref}
                   className="inline-flex w-full items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 sm:w-auto sm:flex-1"
                 >
                   Login
@@ -222,6 +249,14 @@ const SignupPage = () => {
       </div>
     </main>
   );
-};
+}
+
+function SignupFallback() {
+  return (
+    <main className="grid min-h-screen place-items-center bg-slate-50 pt-20">
+      <p role="status" className="text-sm font-semibold text-slate-600">Preparing registration…</p>
+    </main>
+  );
+}
 
 export default SignupPage;
