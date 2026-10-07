@@ -1,8 +1,15 @@
-# GameXpress Frontend
+# GameXpress Frontend 
 
 GameXpress is a Next.js storefront and administration application for physical products, gift cards, game top-ups, subscriptions, orders, and payments.
 
 This repository contains the frontend only. It communicates with a separate REST API and relies on backend-managed HTTP-only cookies for authentication.
+<div align="center">
+
+[![Live Demo](https://img.shields.io/badge/🌐_Live-Demo-brightgreen?style=for-the-badge)](https://game-express-phi.vercel.app/)
+[![API Docs](https://img.shields.io/badge/📚_API-Docs-blue?style=for-the-badge)](https://gamexpress-server.onrender.com/api-docs/)
+[![Backend Code](https://img.shields.io/badge/💻_Backend-Repository-black?style=for-the-badge&logo=github)](https://github.com/mehadi-shuvo/store-statue-server)
+
+</div>
 
 ## Features
 
